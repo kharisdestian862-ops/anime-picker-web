@@ -6,24 +6,30 @@
     <title>Smart Anime Picker</title>
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div id="dynamic-bg"></div>
 
+    <button id="btnProfile" class="nav-btn top-left-main" onclick="openAbout()">
+      <i class="fas fa-user-circle" style="font-size: 1.5rem"></i>
+    </button>
+
     <div id="homeView" class="container">
-      <div class="top-nav zen-hide">
+      <div class="top-nav zen-hide desktop-only">
         <button class="nav-btn" onclick="openScan()">
-          <i class="fas fa-camera"></i> <span data-lang="btn_scan">Scan</span>
+          <i class="fas fa-camera"></i>
+          <span data-lang="btn_scan" style="margin-left: 5px">Scan</span>
         </button>
         <button class="nav-btn" onclick="openFavorites()">
-          <i class="fas fa-heart"></i> <span data-lang="btn_fav">Favorit</span>
+          <i class="fas fa-heart"></i>
+          <span data-lang="btn_fav" style="margin-left: 5px">Favorit</span>
         </button>
         <button class="nav-btn" onclick="openHistory()">
           <i class="fas fa-history"></i>
-          <span data-lang="btn_history">Riwayat</span>
+          <span data-lang="btn_history" style="margin-left: 5px">Riwayat</span>
         </button>
       </div>
 
@@ -39,6 +45,7 @@
           id="modeAnime"
           class="mode-btn active"
           onclick="switchMode('anime')"
+          data-lang="mode_anime"
         >
           Anime
         </button>
@@ -46,6 +53,7 @@
           id="modeDonghua"
           class="mode-btn"
           onclick="switchMode('donghua')"
+          data-lang="mode_donghua"
         >
           Donghua
         </button>
@@ -53,6 +61,7 @@
           id="modeChar"
           class="mode-btn"
           onclick="switchMode('character')"
+          data-lang="mode_char"
         >
           Karakter
         </button>
@@ -78,8 +87,8 @@
 
       <div id="filterArea" class="filter-box zen-hide">
         <select id="inputGenre" class="custom-input">
-          <option value="" data-lang="opt_random">Semua Genre (Random)</option>
-          <optgroup id="grpGenre" label="Genre Utama">
+          <option value="" data-lang="opt_random">Semua Genre</option>
+          <optgroup data-lang="grp_main" label="Genre Utama">
             <option value="1" data-lang="g_action">Action</option>
             <option value="2" data-lang="g_adventure">Adventure</option>
             <option value="4" data-lang="g_comedy">Comedy</option>
@@ -94,7 +103,7 @@
             <option value="37" data-lang="g_supernatural">Supernatural</option>
             <option value="41" data-lang="g_suspense">Suspense</option>
           </optgroup>
-          <optgroup id="grpTheme" label="Tema">
+          <optgroup data-lang="grp_theme" label="Tema">
             <option value="62" data-lang="t_isekai">Isekai</option>
             <option value="18" data-lang="t_mecha">Mecha</option>
             <option value="23" data-lang="t_school">School</option>
@@ -109,7 +118,7 @@
             <option value="31" data-lang="t_superpower">Super Power</option>
             <option value="17" data-lang="t_martial">Martial Arts</option>
           </optgroup>
-          <optgroup id="grpDemographic" label="Target Penonton">
+          <optgroup data-lang="grp_demo" label="Target Penonton">
             <option value="27" data-lang="d_shounen">Shounen</option>
             <option value="25" data-lang="d_shoujo">Shoujo</option>
             <option value="42" data-lang="d_seinen">Seinen</option>
@@ -122,6 +131,7 @@
           id="inputYear"
           class="custom-input"
           placeholder="Tahun"
+          data-lang="ph_year"
         />
       </div>
 
@@ -133,7 +143,7 @@
           id="btnGacha"
           class="gacha-btn"
           onclick="getData()"
-          data-lang="btn-search"
+          data-lang="btn_search"
         >
           Carikan Anime
         </button>
@@ -142,6 +152,7 @@
         id="voiceStatus"
         style="font-size: 0.8rem; margin-top: 5px; opacity: 0; transition: 0.3s"
         class="zen-hide"
+        data-lang="listening"
       >
         Mendengarkan...
       </p>
@@ -165,7 +176,7 @@
         />
         <div class="content">
           <div class="tag-row">
-            <span id="txtScore" class="badge badge-score">⭐ 0.00</span>
+            <span id="txtScore" class="badge badge-score">⭐ 0.0</span>
             <span id="txtEps" class="badge badge-ep">? Eps</span>
             <span id="txtStatus" class="badge badge-status">Status</span>
           </div>
@@ -177,15 +188,18 @@
           </div>
 
           <div class="action-buttons">
-            <button id="btnFavorite" class="fav-btn" onclick="toggleFavorite()">
+            <button
+              id="btnFavorite"
+              class="fav-btn action-btn"
+              onclick="toggleFavorite()"
+            >
               <i class="far fa-heart"></i>
             </button>
 
             <button
               id="btnRecommend"
-              class="recommend-btn"
+              class="recommend-btn action-btn"
               onclick="getSimilarAnime()"
-              data-lang="btn_recommend"
               style="display: none"
             >
               <i class="fas fa-magic"></i>
@@ -195,7 +209,7 @@
               id="btnTrailer"
               href="#"
               target="_blank"
-              class="trailer-btn"
+              class="trailer-btn action-btn"
               data-lang="btn_trailer"
             >
               <i class="fab fa-youtube"></i>
@@ -203,7 +217,7 @@
 
             <button
               id="btnSave"
-              class="save-btn"
+              class="save-btn action-btn"
               onclick="downloadCard()"
               data-lang="btn_save"
             >
@@ -214,7 +228,7 @@
               id="btnShare"
               href="#"
               target="_blank"
-              class="share-btn"
+              class="share-btn action-btn"
               data-lang="btn_share"
             >
               <i class="fab fa-whatsapp"></i>
@@ -223,7 +237,7 @@
               id="linkMal"
               href="#"
               target="_blank"
-              class="mal-link"
+              class="mal-link action-btn"
               data-lang="link_mal"
             >
               MAL
@@ -236,6 +250,7 @@
     <div id="historyView" class="container" style="display: none">
       <button class="nav-btn top-left" onclick="closeHistory()">
         <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
       </button>
       <h2 data-lang="hist_title" style="margin-top: 50px">Riwayat</h2>
       <div id="historyList" class="history-list"></div>
@@ -252,6 +267,7 @@
     <div id="favoritesView" class="container" style="display: none">
       <button class="nav-btn top-left" onclick="closeFavorites()">
         <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
       </button>
       <h2 data-lang="fav_title" style="margin-top: 50px">Favorit</h2>
       <div id="favoritesList" class="history-list"></div>
@@ -268,6 +284,7 @@
     <div id="scanView" class="container" style="display: none">
       <button class="nav-btn top-left" onclick="closeScan()">
         <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
       </button>
       <h2 data-lang="scan_title" style="margin-top: 50px">Scan Gambar</h2>
       <p data-lang="scan_desc">
@@ -286,7 +303,7 @@
             class="fas fa-cloud-upload-alt"
             style="font-size: 3rem; color: var(--main-color)"
           ></i>
-          <p>Upload</p>
+          <p data-lang="txt_upload">Upload</p>
         </div>
       </div>
       <button
@@ -295,11 +312,12 @@
         onclick="searchByImage()"
         style="margin-top: 20px; display: none"
       >
-        🔍 Scan
+        <span data-lang="btn_scan_action">🔍 Scan</span>
       </button>
       <div
         id="scanLoading"
         style="display: none; margin-top: 20px; color: #aaa"
+        data-lang="txt_processing"
       >
         Sedang memproses...
       </div>
@@ -309,18 +327,26 @@
     <div id="statsView" class="container" style="display: none">
       <button class="nav-btn top-left" onclick="closeStats()">
         <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
       </button>
-      <h2 style="margin-top: 50px; color: var(--main-color)">Statistik</h2>
+      <h2
+        style="margin-top: 50px; color: var(--main-color)"
+        data-lang="stats_title"
+      >
+        Statistik
+      </h2>
       <div class="stats-card">
-        <h3>Level</h3>
+        <h3 data-lang="stats_level">Level</h3>
         <div id="wibuLevel" class="level-badge">Newbie</div>
       </div>
       <div class="stats-grid">
         <div class="stat-box">
-          <span id="statHistory" class="stat-num">0</span><span>Riwayat</span>
+          <span id="statHistory" class="stat-num">0</span
+          ><span data-lang="btn_history">Riwayat</span>
         </div>
         <div class="stat-box">
-          <span id="statFav" class="stat-num">0</span><span>Favorit</span>
+          <span id="statFav" class="stat-num">0</span
+          ><span data-lang="btn_fav">Favorit</span>
         </div>
       </div>
       <div class="chart-container">
@@ -328,8 +354,92 @@
       </div>
     </div>
 
+    <div id="aboutView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeAbout()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
+      </button>
+
+      <div class="profile-wrapper">
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar">
+              <i class="fas fa-user-astronaut"></i>
+            </div>
+            <h2 class="profile-name">Kharis Destian Maulana</h2>
+            <span class="profile-role" data-lang="about_role"
+              >Web Developer</span
+            >
+          </div>
+
+          <div class="profile-body">
+            <p class="profile-quote" data-lang="about_msg">
+              Terima kasih sudah menggunakan website ini!
+            </p>
+
+            <div class="profile-aliases">
+              <p>🇯🇵 カリス・デスティアン・マウラナ</p>
+              <p>🇨🇳 哈里斯·德斯蒂安·毛拉纳</p>
+            </div>
+
+            <div class="social-links">
+              <a
+                href="https://www.instagram.com/kharis_destian?igsh=bWYyZjR6NGY1MGtu"
+                target="_blank"
+                class="social-btn ig"
+              >
+                <i class="fab fa-instagram"></i>
+                <span>Instagram</span>
+              </a>
+              <a
+                href="https://x.com/RiRay862?t=iDQzj1b6WLunb65j-61-2w&s=09"
+                target="_blank"
+                class="social-btn tw"
+              >
+                <i class="fa-brands fa-x-twitter"></i>
+                <span>X (Twitter)</span>
+              </a>
+              <a href="mailto:kharisdestian862@gmail.com" class="social-btn em">
+                <i class="fas fa-envelope"></i>
+                <span>Email</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="fab-container" id="fabContainer">
       <div class="fab-items">
+        <button
+          class="toggle-btn mini-fab mobile-only-fab"
+          style="background-color: #00b894"
+          onclick="openStats()"
+        >
+          <i class="fas fa-chart-pie"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab mobile-only-fab"
+          style="background-color: #e17055"
+          onclick="openHistory()"
+        >
+          <i class="fas fa-history"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab mobile-only-fab"
+          style="background-color: #e84393"
+          onclick="openFavorites()"
+        >
+          <i class="fas fa-heart"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab mobile-only-fab"
+          style="background-color: #0984e3"
+          onclick="openScan()"
+        >
+          <i class="fas fa-camera"></i>
+        </button>
+
         <button
           id="zenToggle"
           class="toggle-btn mini-fab"
@@ -384,14 +494,6 @@
           style="background-color: #6c5ce7"
         >
           <i class="fas fa-moon"></i>
-        </button>
-
-        <button
-          class="toggle-btn mini-fab"
-          style="background-color: #00b894"
-          onclick="openStats()"
-        >
-          <i class="fas fa-chart-pie"></i>
         </button>
       </div>
 
