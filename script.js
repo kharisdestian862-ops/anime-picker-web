@@ -157,35 +157,6 @@ const translations = {
     toast_fav_added: "Tersimpan di Favorit ❤️",
     toast_fav_removed: "Dihapus dari Favorit 💔",
     toast_saved: "Gambar tersimpan! 📸",
-    g_action: "Aksi",
-    g_adventure: "Petualangan",
-    g_comedy: "Komedi",
-    g_drama: "Drama",
-    g_fantasy: "Fantasi",
-    g_horror: "Horror",
-    g_mystery: "Misteri",
-    g_romance: "Romantis",
-    g_scifi: "Fiksi Ilmiah (Sci-Fi)",
-    g_slice: "Kehidupan Sehari-hari (SoL)",
-    g_sports: "Olahraga",
-    g_supernatural: "Supranatural",
-    g_suspense: "Suspense",
-    t_isekai: "Isekai",
-    t_mecha: "Mecha",
-    t_school: "Sekolah",
-    t_historical: "Sejarah",
-    t_music: "Musik",
-    t_psychological: "Psikologis",
-    t_military: "Militer",
-    t_racing: "Balapan",
-    t_vampire: "Vampir",
-    t_superpower: "Kekuatan Super",
-    t_martial: "Bela Diri",
-    d_shounen: "Shounen",
-    d_shoujo: "Shoujo",
-    d_seinen: "Seinen",
-    d_josei: "Josei",
-    d_kids: "Kids",
   },
   en: {
     title: "Search Anime",
@@ -227,35 +198,6 @@ const translations = {
     toast_fav_added: "Saved to Favorites ❤️",
     toast_fav_removed: "Removed from Favorites 💔",
     toast_saved: "Image saved! 📸",
-    g_action: "Action",
-    g_adventure: "Adventure",
-    g_comedy: "Comedy",
-    g_drama: "Drama",
-    g_fantasy: "Fantasy",
-    g_horror: "Horror",
-    g_mystery: "Mystery",
-    g_romance: "Romance",
-    g_scifi: "Sci-Fi",
-    g_slice: "Slice of Life",
-    g_sports: "Sports",
-    g_supernatural: "Supernatural",
-    g_suspense: "Suspense",
-    t_isekai: "Isekai",
-    t_mecha: "Mecha",
-    t_school: "School",
-    t_historical: "Historical",
-    t_music: "Music",
-    t_psychological: "Psychological",
-    t_military: "Military",
-    t_racing: "Racing",
-    t_vampire: "Vampire",
-    t_superpower: "Super Power",
-    t_martial: "Martial Arts",
-    d_shounen: "Shounen",
-    d_shoujo: "Shoujo",
-    d_seinen: "Seinen",
-    d_josei: "Josei",
-    d_kids: "Kids",
   },
   jp: {
     title: "アニメ検索",
@@ -297,35 +239,6 @@ const translations = {
     toast_fav_added: "保存しました ❤️",
     toast_fav_removed: "削除しました 💔",
     toast_saved: "保存完了！ 📸",
-    g_action: "アクション",
-    g_adventure: "冒険",
-    g_comedy: "コメディ",
-    g_drama: "ドラマ",
-    g_fantasy: "ファンタジー",
-    g_horror: "ホラー",
-    g_mystery: "ミステリー",
-    g_romance: "ロマンス",
-    g_scifi: "SF",
-    g_slice: "日常",
-    g_sports: "スポーツ",
-    g_supernatural: "超自然",
-    g_suspense: "サスペンス",
-    t_isekai: "異世界",
-    t_mecha: "メカ",
-    t_school: "学園",
-    t_historical: "歴史",
-    t_music: "音楽",
-    t_psychological: "心理",
-    t_military: "ミリタリー",
-    t_racing: "レース",
-    t_vampire: "ヴァンパイア",
-    t_superpower: "超能力",
-    t_martial: "武道",
-    d_shounen: "少年",
-    d_shoujo: "少女",
-    d_seinen: "青年",
-    d_josei: "女性",
-    d_kids: "子供",
   },
   cn: {
     title: "动漫搜索",
@@ -367,35 +280,6 @@ const translations = {
     toast_fav_added: "已收藏 ❤️",
     toast_fav_removed: "已取消 💔",
     toast_saved: "已保存！ 📸",
-    g_action: "动作",
-    g_adventure: "冒险",
-    g_comedy: "喜剧",
-    g_drama: "剧情",
-    g_fantasy: "奇幻",
-    g_horror: "恐怖",
-    g_mystery: "悬疑",
-    g_romance: "爱情",
-    g_scifi: "科幻",
-    g_slice: "日常",
-    g_sports: "运动",
-    g_supernatural: "超自然",
-    g_suspense: "惊悚",
-    t_isekai: "异世界",
-    t_mecha: "机甲",
-    t_school: "校园",
-    t_historical: "历史",
-    t_music: "音乐",
-    t_psychological: "心理",
-    t_military: "军事",
-    t_racing: "赛车",
-    t_vampire: "吸血鬼",
-    t_superpower: "超能力",
-    t_martial: "武侠",
-    d_shounen: "少年",
-    d_shoujo: "少女",
-    d_seinen: "青年",
-    d_josei: "女性",
-    d_kids: "儿童",
   },
 };
 
@@ -405,9 +289,7 @@ function toggleFabMenu() {
 }
 
 document.addEventListener("click", (e) => {
-  if (!fabContainer.contains(e.target)) {
-    fabContainer.classList.remove("active");
-  }
+  if (!fabContainer.contains(e.target)) fabContainer.classList.remove("active");
 });
 
 function renderQuickTags() {
@@ -440,14 +322,10 @@ function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = `toast ${type}`;
   toast.innerText = message;
-
   toastContainer.appendChild(toast);
-
   setTimeout(() => {
     toast.style.animation = "toastOut 0.3s forwards";
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
+    setTimeout(() => toast.remove(), 300);
   }, 3000);
 }
 
@@ -511,43 +389,57 @@ function switchMode(mode) {
   }
 }
 
+// --- HELPER UNTUK PILIH UNIK (NO DUPLICATE) ---
+function pickRandomUnique(items, keyName) {
+  let seenList = JSON.parse(localStorage.getItem(`seen_${currentMode}`)) || [];
+
+  // Filter item yang belum pernah dilihat
+  let unseen = items.filter((item) => !seenList.includes(item[keyName]));
+
+  // Jika semua sudah dilihat, Reset!
+  if (unseen.length === 0) {
+    seenList = [];
+    localStorage.removeItem(`seen_${currentMode}`);
+    unseen = items; // Pakai semua item lagi
+  }
+
+  // Pilih acak dari yang belum dilihat
+  const selected = unseen[Math.floor(Math.random() * unseen.length)];
+
+  // Simpan ID ke daftar seen
+  seenList.push(selected[keyName]);
+  localStorage.setItem(`seen_${currentMode}`, JSON.stringify(seenList));
+
+  return selected;
+}
+
 async function getTrendingAnime() {
   try {
     const response = await fetch(
       "https://api.jikan.moe/v4/top/anime?filter=airing&limit=10"
     );
     const data = await response.json();
-    const trendingData = data.data;
-
-    trendingList.innerHTML = trendingData
+    trendingList.innerHTML = data.data
       .map(
         (item) => `
-            <div class="trending-item" onclick="fetchAndShowDetails(${item.mal_id})">
-                <img src="${item.images.jpg.image_url}" alt="${item.title}" class="trending-poster">
-                <div class="trending-title">${item.title}</div>
-            </div>
-        `
+        <div class="trending-item" onclick="fetchAndShowDetails(${item.mal_id})">
+            <img src="${item.images.jpg.image_url}" class="trending-poster">
+            <div class="trending-title">${item.title}</div>
+        </div>
+    `
       )
       .join("");
-  } catch (error) {
-    trendingList.innerHTML =
-      "<p style='color: #777; padding: 10px;'>Gagal memuat trending.</p>";
-  }
+  } catch (error) {}
 }
 
 async function fetchAndShowDetails(id) {
   playSound(sfxClick);
   window.scrollTo({ top: 0, behavior: "smooth" });
-
-  if (currentMode !== "anime") {
-    switchMode("anime");
-  }
-
+  if (currentMode !== "anime") switchMode("anime");
   try {
     const response = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
     const data = await response.json();
-    const anime = data.data;
-    displayAnimeDetails(anime);
+    displayAnimeDetails(data.data);
   } catch (error) {
     showToast(translations[currentLang].alertError, "error");
   }
@@ -559,133 +451,60 @@ async function getData() {
   btn.innerText = translations[currentLang].btnLoading;
   card.style.display = "none";
 
-  if (currentMode === "character") {
-    await getCharacter();
-  } else if (currentMode === "donghua") {
-    await getDonghua();
-  } else {
-    await getAnime();
-  }
+  if (currentMode === "character") await getCharacter();
+  else if (currentMode === "donghua") await getDonghua();
+  else await getAnime();
 }
 
 async function getDonghua() {
   const genreId = document.getElementById("inputGenre").value;
-  const yearVal = document.getElementById("inputYear").value;
-
-  let genreFilter = "";
-  let yearFilter = "";
-
-  if (genreId && malToAnilistGenre[genreId]) {
-    genreFilter = `, genre: "${malToAnilistGenre[genreId]}"`;
-  }
-
-  if (yearVal) {
-    yearFilter = `, seasonYear: ${yearVal}`;
-  }
-
-  let pageParam = "";
-  if (!genreId && !yearVal) {
-    const randomPage = Math.floor(Math.random() * 20) + 1;
-    pageParam = `page: ${randomPage},`;
-  } else {
-    pageParam = `page: 1,`;
-  }
-
-  const query = `
-    query {
-      Page(${pageParam} perPage: 50) {
-        media(countryOfOrigin: "CN", type: ANIME, sort: POPULARITY_DESC ${genreFilter} ${yearFilter}) {
-          id
-          title { romaji native }
-          coverImage { large }
-          description
-          averageScore
-          siteUrl
-          status
-          episodes
-          trailer { id site }
-        }
-      }
-    }
-    `;
+  let genreFilter =
+    genreId && malToAnilistGenre[genreId]
+      ? `, genre: "${malToAnilistGenre[genreId]}"`
+      : "";
+  // Random Page 1-20 untuk variasi
+  const randomPage = Math.floor(Math.random() * 20) + 1;
+  const query = `query { Page(page: ${randomPage}, perPage: 50) { media(countryOfOrigin: "CN", type: ANIME, sort: POPULARITY_DESC ${genreFilter}) { id title { romaji native } coverImage { large } description averageScore siteUrl status episodes trailer { id site } } } }`;
 
   try {
     const response = await fetch("https://graphql.anilist.co", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({ query: query }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
     });
-
-    if (!response.ok) throw new Error("Gagal");
     const result = await response.json();
     const items = result.data.Page.media;
-
-    if (!items || items.length === 0) {
+    if (!items.length) {
       showToast(translations[currentLang].alertNotFound, "error");
       return;
     }
 
-    const anime = items[Math.floor(Math.random() * items.length)];
+    // GUNAKAN FUNGSI UNIK
+    const anime = pickRandomUnique(items, "id");
 
     currentAnimeData = {
       mal_id: anime.id,
-      title: anime.title.romaji || anime.title.native,
+      title: anime.title.romaji,
       image: anime.coverImage.large,
       url: anime.siteUrl,
-      score: anime.averageScore
-        ? `⭐ ${(anime.averageScore / 10).toFixed(1)}`
-        : "⭐ N/A",
+      score: "⭐ " + (anime.averageScore / 10).toFixed(1),
     };
 
-    const imgUrl = currentAnimeData.image;
-    dynamicBg.style.backgroundImage = `url('${imgUrl}')`;
-    document.getElementById("imgPoster").src = imgUrl;
+    document.getElementById("imgPoster").src = currentAnimeData.image;
     document.getElementById("titleMain").innerText = currentAnimeData.title;
-    document.getElementById("titleJp").innerText = anime.title.native || "";
-
+    document.getElementById("titleJp").innerText = anime.title.native;
     document.getElementById("txtScore").innerText = currentAnimeData.score;
-    document.getElementById("txtEps").innerText = anime.episodes
-      ? `${anime.episodes} Eps`
-      : "? Eps";
-    document.getElementById("txtEps").style.display = "inline-block";
-    document.getElementById("txtStatus").innerText = anime.status;
-    document.getElementById("txtStatus").style.display = "inline-block";
-
-    let cleanDesc = anime.description
+    document.getElementById("txtSynopsis").innerText = anime.description
       ? anime.description.replace(/<[^>]*>?/gm, "")
-      : "No synopsis available.";
-    document.getElementById("txtSynopsis").innerText = cleanDesc;
-
+      : "No desc";
     document.getElementById("linkMal").href = anime.siteUrl;
-
-    const trailerBtn = document.getElementById("btnTrailer");
-    if (anime.trailer && anime.trailer.site === "youtube") {
-      trailerBtn.href = `https://www.youtube.com/watch?v=${anime.trailer.id}`;
-      trailerBtn.style.display = "flex";
-    } else {
-      trailerBtn.style.display = "none";
-    }
-
-    document.querySelector(".quote-box").style.display = "none";
-    document.getElementById("btnRecommend").style.display = "none";
-
-    const shareBtn = document.getElementById("btnShare");
-    shareBtn.href = `https://wa.me/?text=${encodeURIComponent(
-      "Check this Donghua: " +
-        currentAnimeData.title +
-        " " +
-        currentAnimeData.url
-    )}`;
 
     addToHistory(currentAnimeData);
     checkFavoriteStatus(currentAnimeData.mal_id);
     playSound(sfxSuccess);
     card.style.display = "block";
-  } catch (error) {
-    showToast(translations[currentLang].alertError, "error");
+  } catch (e) {
+    showToast("Error", "error");
   } finally {
     btn.disabled = false;
     btn.innerText = translations[currentLang].btnAgain;
@@ -695,10 +514,10 @@ async function getDonghua() {
 async function getCharacter() {
   try {
     const response = await fetch("https://api.jikan.moe/v4/random/characters");
-    if (!response.ok) throw new Error("Gagal");
     const data = await response.json();
     const char = data.data;
-
+    // Random character API Jikan selalu random, jadi sulit dilacak uniknya per batch,
+    // tapi kita bisa simpan ID nya juga.
     currentAnimeData = {
       mal_id: char.mal_id,
       title: char.name,
@@ -707,36 +526,20 @@ async function getCharacter() {
       score: "❤️ " + (char.favorites || 0),
     };
 
-    const imgUrl = currentAnimeData.image;
-    dynamicBg.style.backgroundImage = `url('${imgUrl}')`;
-    document.getElementById("imgPoster").src = imgUrl;
+    document.getElementById("imgPoster").src = currentAnimeData.image;
     document.getElementById("titleMain").innerText = char.name;
-    document.getElementById("titleJp").innerText = char.name_kanji || "";
-
+    document.getElementById("titleJp").innerText = char.name_kanji;
     document.getElementById("txtScore").innerText = currentAnimeData.score;
-    document.getElementById("txtEps").style.display = "none";
-    document.getElementById("txtStatus").style.display = "none";
-
     document.getElementById("txtSynopsis").innerText = char.about
-      ? char.about.substring(0, 300) + "..."
-      : "No description.";
-    document.getElementById("linkMal").href = char.url;
-    document.getElementById("btnTrailer").style.display = "none";
-
-    document.querySelector(".quote-box").style.display = "none";
-    document.getElementById("btnRecommend").style.display = "none";
-
-    const shareBtn = document.getElementById("btnShare");
-    shareBtn.href = `https://wa.me/?text=${encodeURIComponent(
-      "Check this character: " + char.name + " " + char.url
-    )}`;
+      ? char.about.substring(0, 200) + "..."
+      : "-";
 
     addToHistory(currentAnimeData);
     checkFavoriteStatus(currentAnimeData.mal_id);
     playSound(sfxSuccess);
     card.style.display = "block";
-  } catch (error) {
-    showToast(translations[currentLang].alertError, "error");
+  } catch (e) {
+    showToast("Error", "error");
   } finally {
     btn.disabled = false;
     btn.innerText = translations[currentLang].btnAgain;
@@ -746,28 +549,26 @@ async function getCharacter() {
 async function getAnime() {
   const genre = document.getElementById("inputGenre").value;
   const year = document.getElementById("inputYear").value;
+  // Random Page 1-25 agar tidak selalu page 1
+  const randomPage = Math.floor(Math.random() * 25) + 1;
 
   try {
-    let url =
-      "https://api.jikan.moe/v4/anime?order_by=popularity&sort=asc&sfw=true";
+    let url = `https://api.jikan.moe/v4/anime?order_by=popularity&sort=asc&sfw=true&page=${randomPage}`;
     if (genre) url += `&genres=${genre}`;
     if (year) url += `&start_date=${year}-01-01&end_date=${year}-12-31`;
 
     const response = await fetch(url);
-    if (!response.ok) throw new Error("Gagal mengambil data");
     const data = await response.json();
-
-    if (data.data.length === 0) {
+    if (!data.data.length) {
       showToast(translations[currentLang].alertNotFound, "error");
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * data.data.length);
-    const anime = data.data[randomIndex];
-
-    displayAnimeDetails(anime);
-  } catch (error) {
-    showToast(translations[currentLang].alertError, "error");
+    // GUNAKAN FUNGSI UNIK
+    const selected = pickRandomUnique(data.data, "mal_id");
+    displayAnimeDetails(selected);
+  } catch (e) {
+    showToast("Error/Limit API", "error");
   } finally {
     btn.disabled = false;
     btn.innerText = translations[currentLang].btnAgain;
@@ -775,31 +576,26 @@ async function getAnime() {
 }
 
 async function getSimilarAnime() {
-  if (!currentAnimeData || !currentAnimeData.mal_id) return;
-
-  playSound(sfxClick);
+  if (!currentAnimeData) return;
   btn.disabled = true;
-  btn.innerText = translations[currentLang].btnLoading;
-
   try {
     const response = await fetch(
       `https://api.jikan.moe/v4/anime/${currentAnimeData.mal_id}/recommendations`
     );
     const data = await response.json();
-
-    if (!data.data || data.data.length === 0) {
-      showToast("Tidak ada rekomendasi yang mirip.", "info");
+    if (!data.data.length) {
+      showToast("Tidak ada mirip", "info");
       btn.disabled = false;
-      btn.innerText = translations[currentLang].btnAgain;
       return;
     }
 
-    const randomRec = data.data[Math.floor(Math.random() * data.data.length)];
-    fetchAndShowDetails(randomRec.entry.mal_id);
-  } catch (error) {
-    showToast(translations[currentLang].alertError, "error");
+    // GUNAKAN FUNGSI UNIK UTK MIRIP
+    // Tapi API rekomen strukturnya beda (entry.mal_id), jadi ambil manual
+    const items = data.data.map((i) => i.entry);
+    const selected = pickRandomUnique(items, "mal_id");
+    fetchAndShowDetails(selected.mal_id);
+  } catch (e) {
     btn.disabled = false;
-    btn.innerText = translations[currentLang].btnAgain;
   }
 }
 
@@ -807,384 +603,137 @@ function displayAnimeDetails(anime) {
   currentAnimeData = {
     mal_id: anime.mal_id,
     title: anime.title,
-    image: anime.images.jpg.large_image_url || anime.images.jpg.image_url,
+    image: anime.images.jpg.large_image_url,
     url: anime.url,
-    score: anime.score,
+    score: "⭐ " + (anime.score || "N/A"),
   };
 
-  const imgUrl = currentAnimeData.image;
-  dynamicBg.style.backgroundImage = `url('${imgUrl}')`;
-
-  document.getElementById("imgPoster").src = imgUrl;
+  document.getElementById(
+    "dynamic-bg"
+  ).style.backgroundImage = `url('${currentAnimeData.image}')`;
+  document.getElementById("imgPoster").src = currentAnimeData.image;
   document.getElementById("titleMain").innerText = anime.title;
-  document.getElementById("titleJp").innerText = anime.title_japanese || "";
-
-  document.getElementById("txtScore").innerText = anime.score
-    ? `⭐ ${anime.score}`
-    : "⭐ N/A";
-  document.getElementById("txtEps").innerText = anime.episodes
-    ? `${anime.episodes} Eps`
-    : "? Eps";
-  document.getElementById("txtEps").style.display = "inline-block";
-
-  document.getElementById("txtStatus").innerText = anime.status;
-  document.getElementById("txtStatus").style.display = "inline-block";
-
+  document.getElementById("titleJp").innerText = anime.title_japanese;
+  document.getElementById("txtScore").innerText = currentAnimeData.score;
   document.getElementById("txtSynopsis").innerText = anime.synopsis
     ? anime.synopsis
-    : "No synopsis available.";
+    : "-";
   document.getElementById("linkMal").href = anime.url;
-
-  const trailerBtn = document.getElementById("btnTrailer");
-  if (anime.trailer && anime.trailer.url) {
-    trailerBtn.href = anime.trailer.url;
-    trailerBtn.style.display = "flex";
-  } else {
-    trailerBtn.style.display = "none";
-  }
-
-  const shareBtn = document.getElementById("btnShare");
-  const msg = currentLang === "id" ? "Cek anime ini: " : "Check this anime: ";
-  shareBtn.href = `https://wa.me/?text=${encodeURIComponent(
-    msg + anime.title + " " + anime.url
-  )}`;
-
-  document.querySelector(".quote-box").style.display = "block";
-  document.getElementById("btnRecommend").style.display = "flex";
-  showRandomQuote();
 
   addToHistory(currentAnimeData);
   checkFavoriteStatus(anime.mal_id);
   playSound(sfxSuccess);
   card.style.display = "block";
-
   btn.disabled = false;
   btn.innerText = translations[currentLang].btnAgain;
+  showRandomQuote();
 }
 
 function downloadCard() {
-  const node = document.getElementById("resultCard");
-
-  html2canvas(node, {
+  html2canvas(document.getElementById("resultCard"), {
     useCORS: true,
-    allowTaint: true,
     backgroundColor: "#1b1b1f",
-  })
-    .then((canvas) => {
-      const link = document.createElement("a");
-      link.download = `anime-card-${Date.now()}.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-      showToast(translations[currentLang].toast_saved, "success");
-    })
-    .catch((err) => {
-      showToast("Gagal menyimpan gambar.", "error");
-    });
-}
-
-function showRandomQuote() {
-  const randomIndex = Math.floor(Math.random() * animeQuotes.length);
-  currentQuote = animeQuotes[randomIndex];
-
-  const textEl = document.querySelector(".quote-text");
-  const charEl = document.querySelector(".quote-char");
-
-  if (currentLang === "id") {
-    textEl.innerText = `"${currentQuote.id}"`;
-  } else {
-    textEl.innerText = `"${currentQuote.en}"`;
-  }
-  charEl.innerText = `- ${currentQuote.char}`;
+  }).then((canvas) => {
+    const link = document.createElement("a");
+    link.download = `anime-${Date.now()}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+    showToast(translations[currentLang].toast_saved, "success");
+  });
 }
 
 function checkFavoriteStatus(id) {
   const favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
-  const isFav = favorites.some((item) => item.id == id); // Pake == biar aman string/number
+  const isFav = favorites.some((item) => item.id == id);
   const icon = btnFavorite.querySelector("i");
-
   if (isFav) {
-    icon.classList.remove("far");
-    icon.classList.add("fas", "filled-heart");
+    icon.classList.replace("far", "fas");
+    icon.classList.add("filled-heart");
   } else {
-    icon.classList.remove("fas", "filled-heart");
-    icon.classList.add("far");
+    icon.classList.replace("fas", "far");
+    icon.classList.remove("filled-heart");
   }
 }
 
 function toggleFavorite() {
   if (!currentAnimeData) return;
   playSound(sfxClick);
-
   let favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
-  const id = currentAnimeData.mal_id;
+  const index = favorites.findIndex(
+    (item) => item.id == currentAnimeData.mal_id
+  );
 
-  const existingIndex = favorites.findIndex((item) => item.id == id);
-
-  if (existingIndex !== -1) {
-    // SUDAH ADA -> HAPUS
-    favorites.splice(existingIndex, 1);
+  if (index !== -1) {
+    favorites.splice(index, 1);
     showToast(translations[currentLang].toast_fav_removed, "error");
   } else {
-    // BELUM ADA -> TAMBAH
-    const newItem = {
-      id: currentAnimeData.mal_id,
-      title: currentAnimeData.title,
-      image: currentAnimeData.images
-        ? currentAnimeData.images.jpg.large_image_url ||
-          currentAnimeData.images.jpg.image_url
-        : currentAnimeData.image,
-      url: currentAnimeData.url,
-      score: currentAnimeData.score,
-    };
-    favorites.unshift(newItem);
+    favorites.unshift({ id: currentAnimeData.mal_id, ...currentAnimeData });
     showToast(translations[currentLang].toast_fav_added, "success");
   }
-
   localStorage.setItem("animeFavorites", JSON.stringify(favorites));
-  checkFavoriteStatus(id);
-
-  // Kalau lagi di halaman favorit, refresh listnya
-  if (favoritesView.style.display === "block") {
-    renderFavorites();
-  }
+  checkFavoriteStatus(currentAnimeData.mal_id);
+  if (favoritesView.style.display === "block") renderFavorites();
   calculateStats();
 }
 
 function openFavorites() {
   playSound(sfxClick);
   homeView.style.display = "none";
-  historyView.style.display = "none";
-  scanView.style.display = "none";
-  statsView.style.display = "none";
   favoritesView.style.display = "block";
-  renderFavorites();
+  const list = document.getElementById("favoritesList");
+  const favs = JSON.parse(localStorage.getItem("animeFavorites")) || [];
+  list.innerHTML = favs.length
+    ? favs
+        .map(
+          (i) =>
+            `<a href="${i.url}" class="history-item"><img src="${i.image}" class="history-thumb"><div class="history-info"><h4>${i.title}</h4><span>${i.score}</span></div></a>`
+        )
+        .join("")
+    : "<p>Kosong</p>";
 }
-
 function closeFavorites() {
   playSound(sfxClick);
   favoritesView.style.display = "none";
   homeView.style.display = "block";
 }
 
-function renderFavorites() {
-  const list = document.getElementById("favoritesList");
-  const favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
-  const emptyMsg = document.getElementById("favEmptyMsg");
-
-  if (favorites.length === 0) {
-    list.innerHTML = "";
-    emptyMsg.style.display = "block";
-    emptyMsg.innerText = translations[currentLang].fav_empty;
-    return;
-  }
-
-  emptyMsg.style.display = "none";
-  list.innerHTML = favorites
-    .map(
-      (item) => `
-        <a href="${item.url}" target="_blank" class="history-item">
-            <img src="${item.image}" alt="thumb" class="history-thumb">
-            <div class="history-info">
-                <h4 class="history-title">${item.title}</h4>
-                <span class="history-score">${
-                  item.score && item.score.toString().includes("❤")
-                    ? item.score
-                    : item.score
-                    ? "⭐ " + item.score
-                    : "N/A"
-                }</span>
-            </div>
-        </a>
-    `
-    )
-    .join("");
-}
-
 function openHistory() {
   playSound(sfxClick);
   homeView.style.display = "none";
-  favoritesView.style.display = "none";
-  scanView.style.display = "none";
-  statsView.style.display = "none";
   historyView.style.display = "block";
-  renderHistory();
+  const list = document.getElementById("historyList");
+  const hists = JSON.parse(localStorage.getItem("animeHistory")) || [];
+  list.innerHTML = hists.length
+    ? hists
+        .map(
+          (i) =>
+            `<a href="${i.url}" class="history-item"><img src="${i.image}" class="history-thumb"><div class="history-info"><h4>${i.title}</h4><span>${i.score}</span></div></a>`
+        )
+        .join("")
+    : "<p>Kosong</p>";
 }
-
 function closeHistory() {
   playSound(sfxClick);
   historyView.style.display = "none";
   homeView.style.display = "block";
 }
 
-function renderHistory() {
-  const list = document.getElementById("historyList");
-  const history = JSON.parse(localStorage.getItem("animeHistory")) || [];
-
-  if (history.length === 0) {
-    const emptyText = translations[currentLang].hist_empty;
-    list.innerHTML = `<p class="empty-msg" data-lang="hist_empty">${emptyText}</p>`;
-    return;
-  }
-
-  list.innerHTML = history
-    .map(
-      (item) => `
-        <a href="${item.url}" target="_blank" class="history-item">
-            <img src="${item.image}" alt="thumb" class="history-thumb">
-            <div class="history-info">
-                <h4 class="history-title">${item.title}</h4>
-                <span class="history-score">${
-                  item.score && item.score.toString().includes("❤")
-                    ? item.score
-                    : item.score
-                    ? "⭐ " + item.score
-                    : "N/A"
-                }</span>
-            </div>
-        </a>
-    `
-    )
-    .join("");
-}
-
-function addToHistory(itemData) {
-  let history = JSON.parse(localStorage.getItem("animeHistory")) || [];
-
-  history = history.filter((item) => item.id !== itemData.mal_id);
-
-  const historyItem = {
-    id: itemData.mal_id,
-    title: itemData.title,
-    image:
-      itemData.image || (itemData.images ? itemData.images.jpg.image_url : ""),
-    url: itemData.url,
-    score: itemData.score,
-  };
-
-  history.unshift(historyItem);
-
-  if (history.length > 20) {
-    history.pop();
-  }
-
-  localStorage.setItem("animeHistory", JSON.stringify(history));
-  calculateStats();
-}
-
-function clearHistory() {
-  playSound(sfxClick);
-  if (confirm("Hapus semua riwayat?")) {
-    localStorage.removeItem("animeHistory");
-    renderHistory();
-    calculateStats();
-  }
-}
-
 function openScan() {
   playSound(sfxClick);
   homeView.style.display = "none";
-  historyView.style.display = "none";
-  favoritesView.style.display = "none";
-  statsView.style.display = "none";
   scanView.style.display = "block";
 }
-
 function closeScan() {
   playSound(sfxClick);
   scanView.style.display = "none";
   homeView.style.display = "block";
 }
-
-function previewImage(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const img = document.getElementById("imagePreview");
-      img.src = e.target.result;
-      img.style.display = "block";
-      document.getElementById("uploadPlaceholder").style.display = "none";
-      document.getElementById("btnScanSearch").style.display = "inline-block";
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-async function searchByImage() {
-  const fileInput = document.getElementById("imageInput");
-  if (!fileInput.files[0]) return;
-
-  playSound(sfxClick);
-  document.getElementById("btnScanSearch").disabled = true;
-  document.getElementById("scanLoading").style.display = "block";
-  document.getElementById("scanResult").innerHTML = "";
-
-  const formData = new FormData();
-  formData.append("image", fileInput.files[0]);
-
-  try {
-    const response = await fetch(
-      "https://api.trace.moe/search?cutBorders&anilistInfo",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
-
-    if (!response.ok) throw new Error("API Error");
-    const data = await response.json();
-
-    document.getElementById("scanLoading").style.display = "none";
-    document.getElementById("btnScanSearch").disabled = false;
-
-    if (!data.result || data.result.length === 0) {
-      showToast(translations[currentLang].scan_no_result, "info");
-      return;
-    }
-
-    displayScanResults(data.result);
-    playSound(sfxSuccess);
-  } catch (err) {
-    showToast(translations[currentLang].scan_error, "error");
-    document.getElementById("scanLoading").style.display = "none";
-    document.getElementById("btnScanSearch").disabled = false;
-  }
-}
-
-function displayScanResults(results) {
-  const container = document.getElementById("scanResult");
-  const topResults = results.slice(0, 3);
-
-  container.innerHTML = topResults
-    .map(
-      (item) => `
-    <div class="scan-result-card">
-      <video class="scan-video" src="${item.video}" autoplay loop muted></video>
-      <div class="scan-info">
-        <h3 class="scan-title">${
-          item.anilist.title.romaji || item.anilist.title.native
-        }</h3>
-        <p class="scan-meta">Episode: ${item.episode || "?"}</p>
-        <p class="scan-meta">${translations[currentLang].similarity}: ${(
-        item.similarity * 100
-      ).toFixed(1)}%</p>
-      </div>
-    </div>
-  `
-    )
-    .join("");
-}
-
 function openStats() {
   playSound(sfxClick);
   homeView.style.display = "none";
-  historyView.style.display = "none";
-  favoritesView.style.display = "none";
-  scanView.style.display = "none";
   statsView.style.display = "block";
   calculateStats();
 }
-
 function closeStats() {
   playSound(sfxClick);
   statsView.style.display = "none";
@@ -1192,62 +741,44 @@ function closeStats() {
 }
 
 function calculateStats() {
-  const history = JSON.parse(localStorage.getItem("animeHistory")) || [];
-  const favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
-
-  const histCount = history.length;
-  const favCount = favorites.length;
-  const total = histCount + favCount;
-
-  document.getElementById("statHistory").innerText = histCount;
-  document.getElementById("statFav").innerText = favCount;
-
-  let level = "Newbie";
-  if (total > 5) level = "Anime Fan";
-  if (total > 20) level = "Otaku";
-  if (total > 50) level = "Wibu Sepuh";
-  if (total > 100) level = "Kami-sama";
-
-  document.getElementById("wibuLevel").innerText = level;
-
-  if (myChart) {
-    myChart.destroy();
-  }
-
   const ctx = document.getElementById("wibuChart").getContext("2d");
+  if (myChart) myChart.destroy();
+  const h = (JSON.parse(localStorage.getItem("animeHistory")) || []).length;
+  const f = (JSON.parse(localStorage.getItem("animeFavorites")) || []).length;
   myChart = new Chart(ctx, {
     type: "doughnut",
     data: {
       labels: ["Riwayat", "Favorit"],
-      datasets: [
-        {
-          data: [histCount, favCount],
-          backgroundColor: ["#4b7bec", "#ff5252"],
-          borderWidth: 0,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: { color: "#aaa" },
-        },
-      },
+      datasets: [{ data: [h, f], backgroundColor: ["#4b7bec", "#ff5252"] }],
     },
   });
 }
 
+function addToHistory(item) {
+  let history = JSON.parse(localStorage.getItem("animeHistory")) || [];
+  history = history.filter((h) => h.id !== item.mal_id);
+  history.unshift({ id: item.mal_id, ...item });
+  if (history.length > 20) history.pop();
+  localStorage.setItem("animeHistory", JSON.stringify(history));
+}
+
+function clearHistory() {
+  playSound(sfxClick);
+  if (confirm("Hapus?")) {
+    localStorage.removeItem("animeHistory");
+    renderHistory();
+  }
+}
+
+function showRandomQuote() {
+  if (!animeQuotes.length) return;
+  const idx = Math.floor(Math.random() * animeQuotes.length);
+  currentQuote = animeQuotes[idx];
+  updateText();
+}
+
 themeBtn.addEventListener("click", () => {
   body.classList.toggle("light-mode");
-  if (body.classList.contains("light-mode")) {
-    themeBtn.innerHTML = icons.moon;
-    themeBtn.style.backgroundColor = "#2e51a2";
-  } else {
-    themeBtn.innerHTML = icons.sun;
-    themeBtn.style.backgroundColor = "#4b7bec";
-  }
 });
 
 langBtn.addEventListener("click", () => {
@@ -1279,41 +810,26 @@ function updateText() {
   elements.forEach((el) => {
     const key = el.getAttribute("data-lang");
     if (t[key]) {
-      if (!["title", "desc", "btn_search"].includes(key)) {
-        el.innerText = t[key];
-      }
+      if (!["title", "desc", "btn_search"].includes(key)) el.innerText = t[key];
     }
   });
 
   document.getElementById("inputYear").placeholder = t.placeholderYear;
 
-  const histEmpty = document.querySelector("#historyList .empty-msg");
-  if (histEmpty) histEmpty.innerText = t.hist_empty;
-
-  const favEmpty = document.getElementById("favEmptyMsg");
-  if (favEmpty) favEmpty.innerText = t.fav_empty;
-
   if (currentQuote) {
     const quoteText = document.querySelector(".quote-text");
-    if (currentLang === "id") {
-      quoteText.innerText = `"${currentQuote.id}"`;
-    } else {
-      quoteText.innerText = `"${currentQuote.en}"`;
-    }
+    const quoteChar = document.querySelector(".quote-char");
+    if (currentLang === "id") quoteText.innerText = `"${currentQuote.id}"`;
+    else if (currentLang === "jp") quoteText.innerText = `"${currentQuote.jp}"`;
+    else if (currentLang === "cn") quoteText.innerText = `"${currentQuote.cn}"`;
+    else quoteText.innerText = `"${currentQuote.en}"`;
+    quoteChar.innerText = `- ${currentQuote.char}`;
   }
 }
 
 colorPicker.addEventListener("input", (e) => {
-  const newColor = e.target.value;
-  document.documentElement.style.setProperty("--main-color", newColor);
-  localStorage.setItem("themeColor", newColor);
+  document.documentElement.style.setProperty("--main-color", e.target.value);
 });
-
-const savedColor = localStorage.getItem("themeColor");
-if (savedColor) {
-  document.documentElement.style.setProperty("--main-color", savedColor);
-  colorPicker.value = savedColor;
-}
 
 function startVoiceCommand() {
   const SpeechRecognition =
@@ -1414,5 +930,6 @@ function processVoiceCommand(cmd) {
 renderQuickTags();
 getTrendingAnime();
 renderHistory();
-calculateStats();
 updateText();
+showRandomQuote();
+calculateStats();
