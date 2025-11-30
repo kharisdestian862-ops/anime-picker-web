@@ -221,6 +221,32 @@ p {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* PROFILE BUTTON FIXED */
+.top-left-main {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 500;
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ccc;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.top-left-main:hover {
+  border-color: var(--main-color);
+  color: var(--main-color);
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .mode-switcher {
   display: flex;
   justify-content: center;
@@ -263,7 +289,7 @@ p {
   height: 50px;
   border-radius: 50%;
   border: none;
-  background-color: #333;
+  background: #333;
   color: white;
   font-size: 1.2rem;
   cursor: pointer;
@@ -278,7 +304,7 @@ p {
 }
 
 .voice-btn.listening {
-  background-color: #ff5252;
+  background: #ff5252;
   animation: pulse 1.5s infinite;
 }
 
@@ -472,7 +498,7 @@ p {
   left: auto !important;
   transform: none !important;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   align-items: center;
   gap: 15px;
   z-index: 10000;
@@ -504,7 +530,7 @@ p {
 
 .fab-items {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 12px;
   opacity: 0;
   visibility: hidden;
@@ -775,8 +801,139 @@ p {
   color: #aaa;
 }
 
+/* --- DESAIN BARU HALAMAN PROFIL (MODERN) --- */
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.profile-card {
+  background: rgba(255, 255, 255, 0.05); /* Glass Effect */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-top: 40px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #252529;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 3px solid var(--main-color);
+  box-shadow: 0 0 20px rgba(75, 123, 236, 0.4);
+}
+
+.profile-avatar i {
+  font-size: 4rem;
+  color: var(--main-color);
+}
+
+.profile-name {
+  font-size: 1.8rem;
+  margin: 0;
+  background: linear-gradient(45deg, #fff, #aaa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+}
+
+.profile-role {
+  display: inline-block;
+  background: var(--main-color);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-top: 10px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.profile-body {
+  margin-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 25px;
+}
+
+.profile-quote {
+  font-style: italic;
+  color: #bbb;
+  margin-bottom: 20px;
+}
+
+.profile-aliases p {
+  color: #888;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.social-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: white;
+  text-decoration: none;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.social-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Warna Spesifik Sosmed */
+.social-btn.ig {
+  background: linear-gradient(
+    45deg,
+    #405de6,
+    #5851db,
+    #833ab4,
+    #c13584,
+    #e1306c,
+    #fd1d1d
+  );
+}
+.social-btn.tw {
+  background: #000;
+  border: 1px solid #333;
+}
+.social-btn.em {
+  background: #ea4335;
+}
+
+/* Tooltip Nama Sosmed (Optional) */
+.social-btn span {
+  display: none; /* Hide text, show icon only for clean look */
+}
+
+/* STATS STYLE LAMA TETAP ADA */
 .stats-card {
-  background-color: #1b1b1f;
+  background: #1b1b1f;
   border: 1px solid #333;
   border-radius: 12px;
   padding: 20px;
@@ -784,13 +941,11 @@ p {
   position: relative;
   overflow: hidden;
 }
-
 .stats-card h3 {
   margin: 0 0 10px 0;
   color: #eee;
   font-size: 1.1rem;
 }
-
 .level-badge {
   font-size: 2rem;
   font-weight: 900;
@@ -798,35 +953,30 @@ p {
   text-shadow: 0 0 15px rgba(75, 123, 236, 0.3);
   margin-bottom: 5px;
 }
-
 .stats-grid {
   display: flex;
   gap: 15px;
   margin-bottom: 20px;
 }
-
 .stat-box {
   flex: 1;
-  background-color: #252529;
+  background: #252529;
   padding: 15px;
   border-radius: 10px;
   border: 1px solid #333;
 }
-
 .stat-num {
   display: block;
   font-size: 1.5rem;
   font-weight: bold;
   color: #fff;
 }
-
 .stat-label {
   font-size: 0.8rem;
   color: #aaa;
 }
-
 .chart-container {
-  background-color: #1b1b1f;
+  background: #1b1b1f;
   border-radius: 12px;
   padding: 20px;
   border: 1px solid #333;
@@ -837,53 +987,30 @@ p {
 }
 
 body.light-mode {
-  background-color: #f0f2f5;
-  color: #333333;
+  background: #f0f2f5;
+  color: #333;
 }
-
 body.light-mode h1 {
   text-shadow: none;
-  color: var(--main-color);
 }
-body.light-mode p {
-  color: #666;
-}
+body.light-mode .anime-card,
+body.light-mode .mode-switcher,
+body.light-mode .history-item,
 body.light-mode .custom-input {
-  background-color: #ffffff;
-  color: #333;
-  border: 1px solid #ccc;
-}
-body.light-mode .anime-card {
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-}
-body.light-mode .card-header {
-  background-color: #e4e6eb;
-  color: #333;
-  border-bottom: 1px solid #ccc;
-}
-body.light-mode .synopsis {
-  color: #555;
-  border-top: 1px solid #eee;
-}
-body.light-mode .anime-title {
-  background-color: transparent;
-  color: #333;
-}
-body.light-mode .history-item {
-  background-color: #fff;
+  background: #fff;
   border-color: #ddd;
   color: #333;
 }
-body.light-mode .history-item:hover {
-  background-color: #f0f2f5;
+body.light-mode .card-header {
+  background: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  color: #333;
 }
-body.light-mode .history-title {
+body.light-mode .anime-title {
   color: #333;
 }
 body.light-mode .quote-box {
-  background-color: #e4e6eb;
+  background: #e4e6eb;
   border-left-color: var(--main-color);
 }
 body.light-mode .quote-text {
@@ -892,35 +1019,18 @@ body.light-mode .quote-text {
 body.light-mode .quote-char {
   color: var(--main-color);
 }
-body.light-mode .upload-box {
-  background-color: #fff;
-  border-color: #ccc;
-}
+body.light-mode .upload-box,
 body.light-mode .scan-result-card {
-  background-color: #fff;
+  background: #fff;
   border-color: #ddd;
 }
 body.light-mode .scan-title {
   color: var(--main-color);
 }
-body.light-mode .mode-switcher {
-  background: #fff;
-  border-color: #ddd;
-}
-body.light-mode .mode-btn {
-  color: #555;
-}
-body.light-mode .mode-btn.active {
-  background-color: var(--main-color);
-  color: #fff;
-}
-body.light-mode .toggle-btn svg {
-  stroke: #333;
-}
 body.light-mode .stats-card,
 body.light-mode .stat-box,
 body.light-mode .chart-container {
-  background-color: #fff;
+  background: #fff;
   border-color: #ddd;
   color: #333;
 }
@@ -928,8 +1038,35 @@ body.light-mode .stats-card h3,
 body.light-mode .stat-num {
   color: #333;
 }
+body.light-mode .toggle-btn svg {
+  stroke: #333;
+}
+/* Light Mode Profile Override */
+body.light-mode .top-left-main {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #ccc;
+  color: #333;
+}
+body.light-mode .profile-card {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: #fff;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+body.light-mode .profile-name {
+  background: linear-gradient(45deg, #333, #666);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body.light-mode .profile-avatar {
+  background: #fff;
+}
 
 @media (max-width: 768px) {
+  .fab-container {
+    bottom: 15px !important;
+    right: 15px !important;
+    flex-direction: column;
+  }
   .desktop-only {
     display: none !important;
   }
