@@ -1,0 +1,696 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #0f0f12;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+#dynamic-bg {
+  position: fixed;
+  top: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  z-index: -1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(8px) brightness(0.4);
+  transition: background-image 0.5s ease-in-out;
+}
+
+.container {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  padding-top: 10px;
+}
+
+h1 {
+  color: #2e51a2;
+  text-shadow: 0 0 10px rgba(46, 81, 162, 0.5);
+  margin-bottom: 10px;
+}
+
+p {
+  color: #aaaaaa;
+  margin-bottom: 30px;
+}
+
+/* NAVIGASI RESPONSIVE */
+.top-nav {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.nav-btn {
+  position: relative;
+  background: transparent;
+  border: 1px solid #444;
+  color: #aaa;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn:hover {
+  border-color: #4b7bec;
+  color: #4b7bec;
+  background-color: rgba(75, 123, 236, 0.1);
+}
+
+.mode-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: #1b1b1f;
+  padding: 5px;
+  border-radius: 30px;
+  border: 1px solid #333;
+  display: inline-flex;
+}
+
+.mode-btn {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  padding: 8px 25px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.mode-btn.active {
+  background-color: #4b7bec;
+  color: white;
+}
+
+/* AREA SEARCH & VOICE */
+.search-area {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+}
+
+.voice-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: #333;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.voice-btn:hover {
+  background-color: #444;
+}
+
+/* Efek berdenyut saat mendengarkan */
+.voice-btn.listening {
+  background-color: #ff5252;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(255, 82, 82, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+  }
+}
+
+.gacha-btn {
+  background: linear-gradient(45deg, #2e51a2, #4b7bec);
+  color: white;
+  font-size: 1.2rem;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 5px 20px rgba(46, 81, 162, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex-grow: 1; /* Biar tombol ini menuhin sisa ruang */
+  max-width: 300px;
+}
+
+.gacha-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(46, 81, 162, 0.6);
+}
+
+.gacha-btn:active {
+  transform: scale(0.95);
+}
+
+.gacha-btn:disabled {
+  background: #555;
+  cursor: wait;
+  transform: none;
+}
+
+.anime-card {
+  background-color: #1b1b1f;
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 40px;
+  text-align: left;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  display: none;
+  animation: popUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid #333;
+}
+
+@keyframes popUp {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.anime-poster {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  display: block;
+}
+
+.content {
+  padding: 25px;
+}
+
+.tag-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+.badge-score {
+  background-color: #f1c40f;
+  color: #000;
+}
+.badge-ep {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+}
+.badge-status {
+  background-color: #27ae60;
+  color: white;
+}
+
+.anime-title {
+  margin: 0;
+  padding: 20px;
+  font-size: 1.5rem;
+  text-align: center;
+  background-color: #151518;
+  border-bottom: 1px solid #333;
+  color: #fff;
+}
+
+.anime-title span {
+  display: block;
+  margin-top: 5px;
+}
+
+.synopsis {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-height: 150px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  border-top: 1px solid #333;
+  padding-top: 15px;
+}
+
+.quote-box {
+  margin: 15px 0 25px 0;
+  padding: 15px;
+  background-color: #252529;
+  border-left: 4px solid #4b7bec;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+
+.quote-text {
+  margin: 0;
+  color: #ddd;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.quote-char {
+  display: block;
+  margin-top: 8px;
+  color: #4b7bec;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: right;
+  font-style: normal;
+}
+
+.filter-box {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.custom-input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background-color: #1b1b1f;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s;
+  min-width: 150px;
+}
+
+.custom-input:focus {
+  border-color: #4b7bec;
+  box-shadow: 0 0 10px rgba(75, 123, 236, 0.2);
+}
+
+.floating-buttons {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
+
+.toggle-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: #4b7bec;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  transition: 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.toggle-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+  fill: none;
+}
+
+.toggle-btn:hover {
+  transform: scale(1.1);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.action-buttons a,
+.fav-btn {
+  flex: 1;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.3s;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.fav-btn {
+  flex: 0 0 50px;
+  background: transparent;
+  border: 1px solid #ff5252;
+  color: #ff5252;
+  font-size: 1.2rem;
+}
+
+.fav-btn:hover {
+  background-color: rgba(255, 82, 82, 0.1);
+}
+
+.fav-btn i.filled-heart {
+  font-weight: 900;
+  color: #ff5252;
+}
+
+.trailer-btn {
+  background-color: #ff0000;
+  color: white;
+  border: 1px solid #ff0000;
+}
+
+.trailer-btn:hover {
+  background-color: #cc0000;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
+}
+
+.share-btn {
+  background-color: #25d366;
+  color: white;
+  border: 1px solid #25d366;
+}
+
+.share-btn:hover {
+  background-color: #128c7e;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+}
+
+.mal-link {
+  background-color: transparent;
+  border: 1px solid #4b7bec;
+  color: #4b7bec;
+}
+
+.mal-link:hover {
+  background-color: #4b7bec;
+  color: white;
+}
+
+.top-left {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background-color: #1b1b1f;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  text-decoration: none;
+  color: white;
+  transition: 0.2s;
+}
+
+.history-item:hover {
+  transform: translateX(5px);
+  border-color: #4b7bec;
+  background-color: #252529;
+}
+
+.history-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.history-info {
+  flex: 1;
+}
+
+.history-title {
+  font-size: 0.95rem;
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.2;
+  color: #eee;
+}
+
+.history-score {
+  font-size: 0.8rem;
+  color: #f1c40f;
+  margin-top: 3px;
+  display: block;
+}
+
+.empty-msg {
+  color: #777;
+  font-style: italic;
+  text-align: center;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #aaa;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  width: 100%;
+  transition: 0.3s;
+}
+
+.clear-btn:hover {
+  border-color: #ff5252;
+  color: #ff5252;
+}
+
+.upload-box {
+  border: 2px dashed #444;
+  border-radius: 15px;
+  padding: 40px 20px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+  background-color: #1b1b1f;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.upload-box:hover {
+  border-color: #4b7bec;
+  background-color: rgba(75, 123, 236, 0.05);
+}
+
+.upload-box input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+}
+
+.preview-img {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.scan-results-container {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.scan-result-card {
+  background-color: #1b1b1f;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #333;
+  text-align: left;
+}
+
+.scan-video {
+  width: 100%;
+  background: black;
+  display: block;
+}
+
+.scan-info {
+  padding: 15px;
+}
+
+.scan-title {
+  color: #4b7bec;
+  font-size: 1.1rem;
+  margin: 0 0 5px 0;
+}
+
+.scan-meta {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+body.light-mode {
+  background-color: #f0f2f5;
+  color: #333333;
+}
+
+body.light-mode h1 {
+  text-shadow: none;
+  color: #2e51a2;
+}
+body.light-mode p {
+  color: #666;
+}
+body.light-mode .custom-input {
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
+}
+body.light-mode .anime-card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+body.light-mode .card-header {
+  background-color: #e4e6eb;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+}
+body.light-mode .synopsis {
+  color: #555;
+  border-top: 1px solid #eee;
+}
+body.light-mode .anime-title {
+  background-color: transparent;
+  color: #333;
+}
+body.light-mode .history-item {
+  background-color: #fff;
+  border-color: #ddd;
+  color: #333;
+}
+body.light-mode .history-item:hover {
+  background-color: #f0f2f5;
+}
+body.light-mode .history-title {
+  color: #333;
+}
+body.light-mode .quote-box {
+  background-color: #e4e6eb;
+  border-left-color: #2e51a2;
+}
+body.light-mode .quote-text {
+  color: #555;
+}
+body.light-mode .quote-char {
+  color: #2e51a2;
+}
+body.light-mode .upload-box {
+  background-color: #fff;
+  border-color: #ccc;
+}
+body.light-mode .scan-result-card {
+  background-color: #fff;
+  border-color: #ddd;
+}
+body.light-mode .scan-title {
+  color: #2e51a2;
+}
+body.light-mode .mode-switcher {
+  background: #fff;
+  border-color: #ddd;
+}
+body.light-mode .mode-btn {
+  color: #555;
+}
+body.light-mode .mode-btn.active {
+  background-color: #2e51a2;
+  color: #fff;
+}
+body.light-mode .toggle-btn svg {
+  stroke: #333;
+}
+
+@media (max-width: 768px) {
+  .top-nav {
+    position: relative;
+    top: auto;
+    right: auto;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-size: 1.8rem;
+    margin-top: 0;
+  }
+  .filter-box {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .custom-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .action-buttons {
+    gap: 10px;
+  }
+  .action-buttons a,
+  .fav-btn {
+    font-size: 0.8rem;
+    padding: 10px 5px;
+  }
+}

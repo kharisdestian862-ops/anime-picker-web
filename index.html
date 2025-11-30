@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Anime Picker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="dynamic-bg"></div>
+
+    <div id="homeView" class="container">
+      <div class="top-nav">
+        <button class="nav-btn" onclick="openScan()">
+          <i class="fas fa-camera"></i> <span data-lang="btn_scan">Scan</span>
+        </button>
+        <button class="nav-btn" onclick="openFavorites()">
+          <i class="fas fa-heart"></i> <span data-lang="btn_fav">Favorit</span>
+        </button>
+        <button class="nav-btn" onclick="openHistory()">
+          <i class="fas fa-history"></i>
+          <span data-lang="btn_history">Riwayat</span>
+        </button>
+      </div>
+
+      <h1 data-lang="title">Cari Anime</h1>
+      <p data-lang="desc">Sesuaikan dengan seleramu hari ini!</p>
+
+      <div class="mode-switcher">
+        <button
+          id="modeAnime"
+          class="mode-btn active"
+          onclick="switchMode('anime')"
+        >
+          Anime
+        </button>
+        <button
+          id="modeChar"
+          class="mode-btn"
+          onclick="switchMode('character')"
+        >
+          Karakter
+        </button>
+      </div>
+
+      <div id="filterArea" class="filter-box">
+        <select id="inputGenre" class="custom-input">
+          <option value="" data-lang="opt_random">Semua Genre (Random)</option>
+          <optgroup id="grpGenre" label="Genre Utama">
+            <option value="1" data-lang="g_action">Action</option>
+            <option value="2" data-lang="g_adventure">Adventure</option>
+            <option value="4" data-lang="g_comedy">Comedy</option>
+            <option value="8" data-lang="g_drama">Drama</option>
+            <option value="10" data-lang="g_fantasy">Fantasy</option>
+            <option value="14" data-lang="g_horror">Horror</option>
+            <option value="7" data-lang="g_mystery">Mystery</option>
+            <option value="22" data-lang="g_romance">Romance</option>
+            <option value="24" data-lang="g_scifi">Sci-Fi</option>
+            <option value="36" data-lang="g_slice">Slice of Life</option>
+            <option value="30" data-lang="g_sports">Sports</option>
+            <option value="37" data-lang="g_supernatural">Supernatural</option>
+            <option value="41" data-lang="g_suspense">
+              Suspense / Thriller
+            </option>
+          </optgroup>
+          <optgroup id="grpTheme" label="Tema">
+            <option value="62" data-lang="t_isekai">Isekai (Dunia Lain)</option>
+            <option value="18" data-lang="t_mecha">Mecha (Robot)</option>
+            <option value="23" data-lang="t_school">School</option>
+            <option value="13" data-lang="t_historical">Historical</option>
+            <option value="19" data-lang="t_music">Music</option>
+            <option value="40" data-lang="t_psychological">
+              Psychological
+            </option>
+            <option value="38" data-lang="t_military">Military</option>
+            <option value="3" data-lang="t_racing">Racing</option>
+            <option value="32" data-lang="t_vampire">Vampire</option>
+            <option value="31" data-lang="t_superpower">Super Power</option>
+            <option value="17" data-lang="t_martial">Martial Arts</option>
+          </optgroup>
+          <optgroup id="grpDemographic" label="Target Penonton">
+            <option value="27" data-lang="d_shounen">
+              Shounen (Remaja Cowok)
+            </option>
+            <option value="25" data-lang="d_shoujo">
+              Shoujo (Remaja Cewek)
+            </option>
+            <option value="42" data-lang="d_seinen">
+              Seinen (Dewasa Pria)
+            </option>
+            <option value="43" data-lang="d_josei">
+              Josei (Dewasa Wanita)
+            </option>
+            <option value="15" data-lang="d_kids">Kids (Anak-anak)</option>
+          </optgroup>
+        </select>
+        <input
+          type="number"
+          id="inputYear"
+          class="custom-input"
+          placeholder="Tahun (Opsional, cth: 2023)"
+        />
+      </div>
+
+      <div class="search-area">
+        <button id="btnVoice" class="voice-btn" onclick="startVoiceCommand()">
+          <i class="fas fa-microphone"></i>
+        </button>
+        <button
+          id="btnGacha"
+          class="gacha-btn"
+          onclick="getData()"
+          data-lang="btn-search"
+        >
+          Carikan Anime
+        </button>
+      </div>
+      <p
+        id="voiceStatus"
+        style="font-size: 0.8rem; margin-top: 5px; opacity: 0; transition: 0.3s"
+      >
+        Mendengarkan...
+      </p>
+
+      <div id="resultCard" class="anime-card">
+        <div class="card-header">
+          <h2 class="anime-title">
+            <span id="titleMain">Judul Anime</span>
+            <span
+              id="titleJp"
+              style="font-size: 0.8rem; opacity: 0.7; font-weight: normal"
+            ></span>
+          </h2>
+        </div>
+        <img id="imgPoster" class="anime-poster" src="" alt="Poster Anime" />
+        <div class="content">
+          <div class="tag-row">
+            <span id="txtScore" class="badge badge-score">⭐ 0.00</span>
+            <span id="txtEps" class="badge badge-ep">? Eps</span>
+            <span id="txtStatus" class="badge badge-status">Status</span>
+          </div>
+          <p id="txtSynopsis" class="synopsis">Sinopsis...</p>
+
+          <div id="quoteArea" class="quote-box">
+            <p class="quote-text">"..."</p>
+            <span class="quote-char">- Character</span>
+          </div>
+
+          <div class="action-buttons">
+            <button id="btnFavorite" class="fav-btn" onclick="toggleFavorite()">
+              <i class="far fa-heart"></i>
+            </button>
+            <a
+              id="btnTrailer"
+              href="#"
+              target="_blank"
+              class="trailer-btn"
+              data-lang="btn_trailer"
+            >
+              <i class="fab fa-youtube"></i> Trailer
+            </a>
+            <a
+              id="btnShare"
+              href="#"
+              target="_blank"
+              class="share-btn"
+              data-lang="btn_share"
+            >
+              <i class="fab fa-whatsapp"></i> Share
+            </a>
+            <a
+              id="linkMal"
+              href="#"
+              target="_blank"
+              class="mal-link"
+              data-lang="link_mal"
+            >
+              MAL ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="historyView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeHistory()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back">Kembali</span>
+      </button>
+      <h2 data-lang="hist_title" style="margin-top: 50px">Riwayat Pencarian</h2>
+      <div id="historyList" class="history-list"></div>
+      <button
+        onclick="clearHistory()"
+        class="clear-btn"
+        data-lang="btn_clear"
+        style="margin-top: 20px"
+      >
+        Hapus Semua Riwayat
+      </button>
+    </div>
+
+    <div id="favoritesView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeFavorites()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back">Kembali</span>
+      </button>
+      <h2 data-lang="fav_title" style="margin-top: 50px">Anime Favoritku</h2>
+      <div id="favoritesList" class="history-list"></div>
+      <p
+        class="empty-msg"
+        id="favEmptyMsg"
+        data-lang="fav_empty"
+        style="display: none"
+      >
+        Belum ada favorit.
+      </p>
+    </div>
+
+    <div id="scanView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeScan()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back">Kembali</span>
+      </button>
+      <h2 data-lang="scan_title" style="margin-top: 50px">
+        Cari dari Screenshot
+      </h2>
+      <p data-lang="scan_desc">
+        Upload gambar adegan anime, sistem akan mencarinya!
+      </p>
+      <div class="upload-box">
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+          onchange="previewImage(event)"
+        />
+        <img id="imagePreview" class="preview-img" style="display: none" />
+        <div id="uploadPlaceholder" class="upload-placeholder">
+          <i
+            class="fas fa-cloud-upload-alt"
+            style="font-size: 3rem; color: #4b7bec"
+          ></i>
+          <p>Klik untuk upload gambar</p>
+        </div>
+      </div>
+      <button
+        id="btnScanSearch"
+        class="gacha-btn"
+        onclick="searchByImage()"
+        style="margin-top: 20px; display: none"
+      >
+        🔍 Scan Anime
+      </button>
+      <div
+        id="scanLoading"
+        style="display: none; margin-top: 20px; color: #aaa"
+      >
+        <i class="fas fa-spinner fa-spin"></i> Sedang memproses gambar...
+      </div>
+      <div id="scanResult" class="scan-results-container"></div>
+    </div>
+
+    <div class="floating-buttons">
+      <button
+        id="musicToggle"
+        class="toggle-btn"
+        style="background-color: #f1c40f"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+      </button>
+      <button
+        id="langToggle"
+        class="toggle-btn"
+        style="background-color: #ff5252; font-weight: 900; font-size: 1.1rem"
+      >
+        ID
+      </button>
+      <button id="themeToggle" class="toggle-btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div id="youtube-player" style="display: none"></div>
+    <audio id="sfxClick" src="click.mp3" preload="auto"></audio>
+    <audio id="sfxSuccess" src="success.mp3" preload="auto"></audio>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
