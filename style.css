@@ -14,6 +14,7 @@ body {
   padding: 20px;
   position: relative;
   z-index: 1;
+  overflow-x: hidden;
 }
 
 body.zen-mode .zen-hide {
@@ -47,17 +48,20 @@ body.zen-mode #dynamic-bg {
   width: 100%;
   text-align: center;
   padding-top: 10px;
+  padding-bottom: 120px;
 }
 
 h1 {
   color: var(--main-color);
   text-shadow: 0 0 10px rgba(75, 123, 236, 0.5);
   margin-bottom: 10px;
+  font-size: 2rem;
 }
 
 p {
   color: #aaaaaa;
   margin-bottom: 30px;
+  font-size: 0.9rem;
 }
 
 .quick-tags {
@@ -87,67 +91,49 @@ p {
 
 #toast-container {
   position: fixed;
-  bottom: 80px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  z-index: 99999;
   width: 90%;
-  max-width: 400px;
+  max-width: 350px;
   pointer-events: none;
 }
 
 .toast {
   background-color: #2b2b2b;
   color: #fff;
-  padding: 15px 20px;
-  border-radius: 50px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
   font-size: 0.9rem;
-  animation: toastIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 10px;
   border: 1px solid #444;
+  animation: toastIn 0.3s;
 }
 
 .toast.success {
   border-color: #2ecc71;
   color: #2ecc71;
-  background-color: #1a1a1a;
 }
 .toast.error {
   border-color: #e74c3c;
   color: #e74c3c;
-  background-color: #1a1a1a;
 }
 .toast.info {
   border-color: var(--main-color);
   color: var(--main-color);
-  background-color: #1a1a1a;
 }
 
 @keyframes toastIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes toastOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
     transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -208,12 +194,10 @@ p {
 }
 
 .top-nav {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
+  justify-content: center;
   gap: 10px;
-  z-index: 10;
+  margin-bottom: 15px;
 }
 
 .nav-btn {
@@ -479,14 +463,19 @@ p {
   box-shadow: 0 0 10px rgba(75, 123, 236, 0.2);
 }
 
-.floating-buttons {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
+/* FAB MENU */
+.fab-container {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 15px;
-  z-index: 1000;
+  z-index: 10000;
 }
 
 .toggle-btn {
@@ -503,7 +492,40 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative; /* INI PENTING AGAR INPUT WARNA TIDAK BOCOR */
+  position: relative;
+}
+
+.main-fab {
+  width: 55px;
+  height: 55px;
+  background: var(--main-color);
+  z-index: 10001;
+}
+
+.fab-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.fab-container.active .fab-items {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.fab-container.active .main-fab {
+  transform: rotate(45deg);
+}
+
+.mini-fab {
+  width: 45px;
+  height: 45px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .toggle-btn svg {
@@ -518,10 +540,10 @@ p {
 }
 
 .action-buttons {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   margin-top: 20px;
-  flex-wrap: wrap;
 }
 
 .action-buttons a,
@@ -545,17 +567,10 @@ p {
 }
 
 .fav-btn {
-  flex: 0 0 50px;
   background: transparent;
   border: 1px solid #ff5252;
   color: #ff5252;
-  font-size: 1.2rem;
 }
-
-.fav-btn:hover {
-  background-color: rgba(255, 82, 82, 0.1);
-}
-
 .fav-btn i.filled-heart {
   font-weight: 900;
   color: #ff5252;
@@ -566,10 +581,8 @@ p {
   color: white;
   border: none;
 }
-
 .recommend-btn:hover {
   background-color: #00a383;
-  box-shadow: 0 4px 15px rgba(0, 184, 148, 0.4);
 }
 
 .save-btn {
@@ -577,10 +590,8 @@ p {
   color: white;
   border: none;
 }
-
 .save-btn:hover {
   background: linear-gradient(45deg, #9b59b6, #8e44ad);
-  box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
 }
 
 .trailer-btn {
@@ -588,10 +599,8 @@ p {
   color: white;
   border: 1px solid #ff0000;
 }
-
 .trailer-btn:hover {
   background-color: #cc0000;
-  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.4);
 }
 
 .share-btn {
@@ -599,10 +608,8 @@ p {
   color: white;
   border: 1px solid #25d366;
 }
-
 .share-btn:hover {
   background-color: #128c7e;
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
 }
 
 .mal-link {
@@ -610,7 +617,6 @@ p {
   border: 1px solid var(--main-color);
   color: var(--main-color);
 }
-
 .mal-link:hover {
   background-color: var(--main-color);
   color: white;
@@ -924,14 +930,11 @@ body.light-mode .stat-num {
 }
 
 @media (max-width: 768px) {
-  .top-nav {
-    position: relative;
-    top: auto;
-    right: auto;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only-fab {
+    display: flex !important;
   }
   h1 {
     font-size: 1.8rem;
@@ -948,12 +951,11 @@ body.light-mode .stat-num {
   .action-buttons {
     gap: 10px;
   }
-  .action-buttons a,
-  .fav-btn,
-  .save-btn,
-  .recommend-btn {
-    font-size: 0.8rem;
-    padding: 10px 5px;
+  .container {
+    padding-bottom: 120px;
+  }
+  .top-nav {
+    display: flex;
   }
 }
 
@@ -963,5 +965,11 @@ body.light-mode .stat-num {
   }
   .trending-poster {
     height: 130px;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only-fab {
+    display: none !important;
   }
 }
