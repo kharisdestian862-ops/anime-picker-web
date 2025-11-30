@@ -14,7 +14,7 @@
     <div id="dynamic-bg"></div>
 
     <div id="homeView" class="container">
-      <div class="top-nav">
+      <div class="top-nav zen-hide">
         <button class="nav-btn" onclick="openScan()">
           <i class="fas fa-camera"></i> <span data-lang="btn_scan">Scan</span>
         </button>
@@ -25,18 +25,32 @@
           <i class="fas fa-history"></i>
           <span data-lang="btn_history">Riwayat</span>
         </button>
+        <button class="nav-btn" onclick="openStats()">
+          <i class="fas fa-chart-pie"></i> Stats
+        </button>
       </div>
 
-      <h1 data-lang="title">Cari Anime</h1>
-      <p data-lang="desc">Sesuaikan dengan seleramu hari ini!</p>
+      <h1 class="zen-hide" data-lang="title">Cari Anime</h1>
+      <p class="zen-hide" data-lang="desc">
+        Sesuaikan dengan seleramu hari ini!
+      </p>
 
-      <div class="mode-switcher">
+      <div id="quickTags" class="quick-tags zen-hide"></div>
+
+      <div class="mode-switcher zen-hide">
         <button
           id="modeAnime"
           class="mode-btn active"
           onclick="switchMode('anime')"
         >
           Anime
+        </button>
+        <button
+          id="modeDonghua"
+          class="mode-btn"
+          onclick="switchMode('donghua')"
+        >
+          Donghua
         </button>
         <button
           id="modeChar"
@@ -47,7 +61,24 @@
         </button>
       </div>
 
-      <div id="filterArea" class="filter-box">
+      <div id="trendingSection" class="trending-wrapper zen-hide">
+        <h3
+          data-lang="trending_title"
+          style="
+            text-align: left;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            color: var(--main-color);
+          "
+        >
+          🔥 Sedang Tayang
+        </h3>
+        <div id="trendingList" class="trending-list">
+          <div class="loading-trending">Memuat...</div>
+        </div>
+      </div>
+
+      <div id="filterArea" class="filter-box zen-hide">
         <select id="inputGenre" class="custom-input">
           <option value="" data-lang="opt_random">Semua Genre (Random)</option>
           <optgroup id="grpGenre" label="Genre Utama">
@@ -106,7 +137,7 @@
         />
       </div>
 
-      <div class="search-area">
+      <div class="search-area zen-hide">
         <button id="btnVoice" class="voice-btn" onclick="startVoiceCommand()">
           <i class="fas fa-microphone"></i>
         </button>
@@ -122,11 +153,12 @@
       <p
         id="voiceStatus"
         style="font-size: 0.8rem; margin-top: 5px; opacity: 0; transition: 0.3s"
+        class="zen-hide"
       >
         Mendengarkan...
       </p>
 
-      <div id="resultCard" class="anime-card">
+      <div id="resultCard" class="anime-card" style="display: none">
         <div class="card-header">
           <h2 class="anime-title">
             <span id="titleMain">Judul Anime</span>
@@ -136,7 +168,13 @@
             ></span>
           </h2>
         </div>
-        <img id="imgPoster" class="anime-poster" src="" alt="Poster Anime" />
+        <img
+          id="imgPoster"
+          class="anime-poster"
+          src=""
+          alt="Poster Anime"
+          crossorigin="anonymous"
+        />
         <div class="content">
           <div class="tag-row">
             <span id="txtScore" class="badge badge-score">⭐ 0.00</span>
@@ -154,6 +192,17 @@
             <button id="btnFavorite" class="fav-btn" onclick="toggleFavorite()">
               <i class="far fa-heart"></i>
             </button>
+
+            <button
+              id="btnRecommend"
+              class="recommend-btn"
+              onclick="getSimilarAnime()"
+              data-lang="btn_recommend"
+              style="display: none"
+            >
+              <i class="fas fa-magic"></i> Mirip
+            </button>
+
             <a
               id="btnTrailer"
               href="#"
@@ -163,6 +212,16 @@
             >
               <i class="fab fa-youtube"></i> Trailer
             </a>
+
+            <button
+              id="btnSave"
+              class="save-btn"
+              onclick="downloadCard()"
+              data-lang="btn_save"
+            >
+              <i class="fas fa-download"></i> Save
+            </button>
+
             <a
               id="btnShare"
               href="#"
@@ -242,7 +301,7 @@
         <div id="uploadPlaceholder" class="upload-placeholder">
           <i
             class="fas fa-cloud-upload-alt"
-            style="font-size: 3rem; color: #4b7bec"
+            style="font-size: 3rem; color: var(--main-color)"
           ></i>
           <p>Klik untuk upload gambar</p>
         </div>
@@ -264,10 +323,77 @@
       <div id="scanResult" class="scan-results-container"></div>
     </div>
 
+    <div id="statsView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeStats()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back">Kembali</span>
+      </button>
+      <h2 style="margin-top: 50px; color: var(--main-color)">Statistik Wibu</h2>
+      <div class="stats-card">
+        <h3>Level Kamu</h3>
+        <div id="wibuLevel" class="level-badge">Newbie</div>
+        <p id="wibuMsg" style="font-size: 0.9rem; color: #aaa; margin-top: 5px">
+          Terus cari anime untuk naik level!
+        </p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span id="statHistory" class="stat-num">0</span>
+          <span class="stat-label">Riwayat</span>
+        </div>
+        <div class="stat-box">
+          <span id="statFav" class="stat-num">0</span>
+          <span class="stat-label">Favorit</span>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="wibuChart"></canvas>
+      </div>
+    </div>
+
     <div class="floating-buttons">
       <button
-        id="musicToggle"
+        id="zenToggle"
         class="toggle-btn"
+        style="background-color: #2d3436"
+        onclick="toggleZenMode()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+
+      <label
+        for="colorPicker"
+        class="toggle-btn zen-hide"
+        style="background-color: #ffffff; cursor: pointer"
+      >
+        🎨
+        <input
+          type="color"
+          id="colorPicker"
+          style="
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+          "
+        />
+      </label>
+
+      <button
+        id="musicToggle"
+        class="toggle-btn zen-hide"
         style="background-color: #f1c40f"
       >
         <svg
@@ -286,12 +412,12 @@
       </button>
       <button
         id="langToggle"
-        class="toggle-btn"
+        class="toggle-btn zen-hide"
         style="background-color: #ff5252; font-weight: 900; font-size: 1.1rem"
       >
         ID
       </button>
-      <button id="themeToggle" class="toggle-btn">
+      <button id="themeToggle" class="toggle-btn zen-hide">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -304,12 +430,33 @@
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>
       </button>
+      <button
+        class="toggle-btn zen-hide"
+        style="background-color: #6c5ce7"
+        onclick="openStats()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+          <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+        </svg>
+      </button>
     </div>
 
+    <div id="toast-container"></div>
     <div id="youtube-player" style="display: none"></div>
     <audio id="sfxClick" src="click.mp3" preload="auto"></audio>
     <audio id="sfxSuccess" src="success.mp3" preload="auto"></audio>
 
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>
   </body>
