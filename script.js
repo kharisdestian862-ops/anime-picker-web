@@ -37,6 +37,8 @@ let isMusicPlaying = false;
 let currentAnimeData = null;
 let currentQuote = null;
 let myChart = null;
+let lastView = "homeView";
+let searchResults = [];
 
 const quickTags = [
   { id: "1", name: "Action" },
@@ -1521,11 +1523,28 @@ function hideAllViews() {
   if (aboutEl) aboutEl.style.display = "none";
   if (document.getElementById("detailView"))
     document.getElementById("detailView").style.display = "none";
+  if (document.getElementById("searchView"))
+    document.getElementById("searchView").style.display = "none";
 }
 
 function openDetail(animeData) {
   playSound(sfxClick);
-  homeView.style.display = "none";
+
+  if (document.getElementById("searchView").style.display === "block") {
+    lastView = "searchView";
+  } else if (
+    document.getElementById("favoritesView").style.display === "block"
+  ) {
+    lastView = "favoritesView";
+  } else if (document.getElementById("historyView").style.display === "block") {
+    lastView = "historyView";
+  } else {
+    lastView = "homeView";
+  }
+
+  // TUTUP SEMUA HALAMAN LAIN (Termasuk Search & Home)
+  hideAllViews();
+
   document.getElementById("detailView").style.display = "block";
   if (btnProfile) btnProfile.style.display = "none";
 
@@ -1586,7 +1605,7 @@ function openDetail(animeData) {
       document.getElementById("detailQuoteText").innerText = `"${
         q[quoteKey] || q.id
       }"`;
-      document.getElementById("detailQuoteChar").innerText = `${q.char}`;
+      document.getElementById("detailQuoteChar").innerText = `- ${q.char}`;
     }
   }
 
@@ -1597,10 +1616,24 @@ function openDetail(animeData) {
 
 // Close Detail
 function closeDetail() {
-  playSound(sfxClick);
   document.getElementById("detailView").style.display = "none";
-  homeView.style.display = "block";
-  if (btnProfile) btnProfile.style.display = "flex";
+
+  // --- LOGIKA KEMBALI PINTAR (BARU) ---
+  if (lastView === "searchView") {
+    document.getElementById("searchView").style.display = "block";
+    // Di search view, tombol profil harus sembunyi
+    if (btnProfile) btnProfile.style.display = "none";
+  } else if (lastView === "favoritesView") {
+    document.getElementById("favoritesView").style.display = "block";
+    if (btnProfile) btnProfile.style.display = "none";
+  } else if (lastView === "historyView") {
+    document.getElementById("historyView").style.display = "block";
+    if (btnProfile) btnProfile.style.display = "none";
+  } else {
+    // Default balik ke Home
+    homeView.style.display = "block";
+    if (btnProfile) btnProfile.style.display = "flex"; // Di home baru muncul
+  }
 }
 
 function checkFavoriteStatusDetail(id) {
@@ -1827,6 +1860,7 @@ function processVoiceCommand(cmd) {
   else if (cmd.includes("favorit")) openFavorites();
   else if (cmd.includes("scan")) openScan();
   else if (cmd.includes("feedback") || cmd.includes("masukan")) openFeedback();
+  else if (cmd.includes("cari") || cmd.includes("search")) openSearchPage();
   else if (cmd.includes("kembali")) {
     closeHistory();
     closeFavorites();
@@ -1971,6 +2005,159 @@ function triggerEasterEgg() {
 
     eggCount = 0; // Reset hitungan
   }
+}
+
+function openSearchPage() {
+  playSound(sfxClick);
+  hideAllViews(); // Pastikan fungsi ini ada (sudah ada di kode sebelumnya)
+  document.getElementById("searchView").style.display = "block";
+
+  if (typeof btnProfile !== "undefined" && btnProfile)
+    btnProfile.style.display = "none";
+
+  // Load data awal (Top Airing, Populer, Rating) jika belum ada isinya
+  if (document.getElementById("listAiring").innerHTML.includes("Memuat")) {
+    fetchSearchPageData();
+  }
+}
+
+// 2. Tutup Halaman Search
+function closeSearchPage() {
+  playSound(sfxClick);
+  document.getElementById("searchView").style.display = "none";
+  homeView.style.display = "block";
+  if (typeof btnProfile !== "undefined" && btnProfile)
+    btnProfile.style.display = "flex";
+}
+
+// 3. Fetch Data untuk 3 Kategori (Airing, Popular, Favorite)
+async function fetchSearchPageData() {
+  try {
+    // Fetch Top Airing
+    const resAiring = await fetch(
+      "https://api.jikan.moe/v4/top/anime?filter=airing&limit=10"
+    );
+    const dataAiring = await resAiring.json();
+    renderHorizontalList("listAiring", dataAiring.data);
+
+    // Fetch Most Popular (Delay dikit biar API ga error)
+    setTimeout(async () => {
+      const resPop = await fetch(
+        "https://api.jikan.moe/v4/top/anime?filter=bypopularity&limit=10"
+      );
+      const dataPop = await resPop.json();
+      renderHorizontalList("listPopular", dataPop.data);
+    }, 1000);
+
+    // Fetch Top Rated (Favorite)
+    setTimeout(async () => {
+      const resRate = await fetch(
+        "https://api.jikan.moe/v4/top/anime?filter=favorite&limit=10"
+      );
+      const dataRate = await resRate.json();
+      renderHorizontalList("listUpcoming", dataRate.data);
+    }, 2000);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Helper untuk render list horizontal
+function renderHorizontalList(elementId, data) {
+  const container = document.getElementById(elementId);
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>Gagal memuat.</p>";
+    return;
+  }
+  container.innerHTML = data
+    .map(
+      (item) => `
+        <div class="trending-item" onclick="fetchAndShowDetails(${
+          item.mal_id
+        })">
+            <img src="${item.images.jpg.image_url}" class="trending-poster">
+            <div class="trending-title">${item.title}</div>
+            <span class="badge badge-score" style="font-size:0.6rem; position:absolute; top:5px; left:5px;">⭐ ${
+              item.score || "?"
+            }</span>
+        </div>
+    `
+    )
+    .join("");
+}
+
+// 4. Fungsi Eksekusi Pencarian (Saat tombol search diklik)
+async function executeSearch() {
+  const query = document.getElementById("searchInput").value;
+  if (!query) return;
+
+  playSound(sfxClick);
+  const preContent = document.getElementById("preSearchContent");
+  const resultContainer = document.getElementById("searchResultContainer");
+  const resultList = document.getElementById("searchResultList");
+
+  // Reset tampilan
+  preContent.style.display = "none";
+  resultContainer.style.display = "block";
+  resultList.innerHTML = '<div class="loading-trending">Mencari...</div>';
+
+  try {
+    const response = await fetch(
+      `https://api.jikan.moe/v4/anime?q=${query}&sfw=true&limit=24`
+    );
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      resultList.innerHTML = "<p>Tidak ditemukan.</p>";
+      return;
+    }
+
+    // 1. SIMPAN DATA KE VARIABEL GLOBAL (Supaya aman diklik)
+    searchResults = data.data;
+
+    // 2. RENDER KARTU (Panggil index-nya saja)
+    resultList.innerHTML = data.data
+      .map(
+        (item, index) => `
+        <div class="trending-item" onclick="selectSearchResult(${index})">
+            <img src="${
+              item.images.jpg.image_url
+            }" class="trending-poster" alt="${item.title}">
+            <div class="trending-title">${item.title}</div>
+            <span class="badge badge-score" style="position:absolute; top:5px; left:5px; font-size:0.7rem; padding:2px 6px;">⭐ ${
+              item.score || "?"
+            }</span>
+        </div>
+    `
+      )
+      .join("");
+  } catch (error) {
+    resultList.innerHTML = "<p>Error koneksi.</p>";
+  }
+}
+
+function selectSearchResult(index) {
+  const item = searchResults[index]; // Ambil data asli dari array
+  if (!item) return;
+
+  // Format data agar cocok dengan halaman detail kita
+  const formattedData = {
+    mal_id: item.mal_id,
+    title: item.title,
+    native: item.title_japanese,
+    image: item.images.jpg.large_image_url,
+    url: item.url,
+    score: "⭐ " + (item.score || "N/A"),
+    episodes: item.episodes,
+    status: item.status,
+    synopsis: item.synopsis,
+    trailerUrl: item.trailer ? item.trailer.url : null,
+    isCharacter: false,
+    isDonghua: false,
+  };
+
+  // Buka Halaman Detail
+  openDetail(formattedData);
 }
 
 // Start
