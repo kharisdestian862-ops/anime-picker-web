@@ -539,6 +539,7 @@ p {
   visibility: hidden;
   transform: translateY(20px);
   transition: all 0.3s ease;
+  margin-bottom: 15px;
 }
 
 .fab-container.active .fab-items {
@@ -1066,9 +1067,34 @@ body.light-mode .profile-avatar {
 
 @media (max-width: 768px) {
   .fab-container {
-    bottom: 15px !important;
-    right: 15px !important;
-    flex-direction: column;
+    bottom: 20px !important;
+    right: 20px !important;
+    align-items: flex-end; /* Rata kanan */
+  }
+
+  .fab-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 3 Kolom */
+    gap: 15px; /* Jarak antar icon */
+    background: rgba(27, 27, 31, 0.9); /* Latar belakang kotak */
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    transform: scale(0.8); /* Efek zoom in saat muncul */
+    transform-origin: bottom right;
+  }
+
+  .fab-container.active .fab-items {
+    transform: scale(1);
+  }
+
+  /* Sembunyikan background label warna di mobile biar rapi */
+  .fab-items label.toggle-btn {
+    background: transparent !important;
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   .desktop-only {
     display: none !important;
@@ -1100,6 +1126,36 @@ body.light-mode .profile-avatar {
 }
 
 @media (max-width: 400px) {
+  .fab-container {
+    bottom: 20px !important;
+    right: 20px !important;
+    align-items: flex-end; /* Rata kanan */
+  }
+
+  .fab-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 3 Kolom */
+    gap: 15px; /* Jarak antar icon */
+    background: rgba(27, 27, 31, 0.9); /* Latar belakang kotak */
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    transform: scale(0.8); /* Efek zoom in saat muncul */
+    transform-origin: bottom right;
+  }
+
+  .fab-container.active .fab-items {
+    transform: scale(1);
+  }
+
+  /* Sembunyikan background label warna di mobile biar rapi */
+  .fab-items label.toggle-btn {
+    background: transparent !important;
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
   .trending-item {
     flex: 0 0 90px;
   }
@@ -1109,6 +1165,36 @@ body.light-mode .profile-avatar {
 }
 
 @media (min-width: 769px) {
+  .fab-container {
+    bottom: 20px !important;
+    right: 20px !important;
+    align-items: flex-end; /* Rata kanan */
+  }
+
+  .fab-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    background: rgba(27, 27, 31, 0.9); /* Latar belakang kotak */
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    transform: scale(0.8); /* Efek zoom in saat muncul */
+    transform-origin: bottom right;
+  }
+
+  .fab-container.active .fab-items {
+    transform: scale(1);
+  }
+
+  /* Sembunyikan background label warna di mobile biar rapi */
+  .fab-items label.toggle-btn {
+    background: transparent !important;
+    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
   .mobile-only-fab {
     display: none !important;
   }
@@ -1499,4 +1585,31 @@ body.light-mode .quote-section {
   opacity: 0 !important;
   pointer-events: none !important;
   transform: scale(0) !important;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ccc;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* Memastikan input di dalam form mengikuti style input yang sudah ada */
+.stats-card input,
+.stats-card textarea {
+  width: 100%;
+  box-sizing: border-box; /* Supaya padding tidak bikin lebar berlebih */
+  background: #252529;
+  border: 1px solid #444;
+}
+
+.stats-card input:focus,
+.stats-card textarea:focus {
+  border-color: var(--main-color);
+  outline: none;
 }
