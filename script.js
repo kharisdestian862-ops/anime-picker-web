@@ -696,7 +696,7 @@ const translations = {
     anime_btn: "Anime",
     donghua_btn: "Donghua",
     Karakter_btn: "Karakter",
-    desc: "Sesuaikan dengan seleramu hari ini!",
+    desc_atas: "Sesuaikan dengan seleramu hari ini!",
     desc_char: "Dapatkan karakter waifu/husbu acak!",
     desc_donghua: "Temukan animasi China terbaik!",
     opt_random: "Semua Genre",
