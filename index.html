@@ -517,6 +517,14 @@
         >
           <i class="fas fa-moon"></i>
         </button>
+
+        <button
+          class="toggle-btn mini-fab"
+          style="background-color: #e67e22"
+          onclick="openFeedback()"
+        >
+          <i class="fas fa-comment-dots"></i>
+        </button>
       </div>
 
       <button class="toggle-btn main-fab" onclick="toggleFabMenu()">
@@ -635,6 +643,67 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <div id="feedbackView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeFeedback()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
+      </button>
+
+      <h2 style="margin-top: 50px; color: var(--main-color)">Kirim Masukan</h2>
+      <p style="color: #aaa; font-size: 0.9rem">
+        Laporkan Bug / Request fitur baru
+      </p>
+
+      <form
+        action="https://formspree.io/f/xovgdaao"
+        method="POST"
+        class="stats-card"
+        style="text-align: left"
+      >
+        <div class="form-group">
+          <label class="form-label">Judul / Subjek</label>
+          <input
+            type="text"
+            name="subject"
+            class="custom-input"
+            placeholder="Contoh: Error saat scan..."
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Kamu</label>
+          <input
+            type="email"
+            name="email"
+            class="custom-input"
+            placeholder="nama@gmail.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Deskripsi Masalah / Saran</label>
+          <textarea
+            name="message"
+            class="custom-input"
+            rows="5"
+            placeholder="Jelaskan detailnya di sini..."
+            required
+            style="resize: none"
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          class="gacha-btn"
+          style="width: 100%; margin-top: 10px"
+        >
+          <i class="fas fa-paper-plane"></i> Kirim
+        </button>
+      </form>
     </div>
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
