@@ -733,6 +733,9 @@ const translations = {
     about_title: "Tentang Developer",
     about_role: "Web Developer",
     about_msg: "Terima kasih sudah menggunakan website ini!",
+    greet_morning: "Ohayou! Pagi yang cerah ☀️",
+    greet_afternoon: "Konnichiwa! Jangan lupa istirahat ☕",
+    greet_evening: "Konbanwa! Waktunya nonton anime 🌙",
   },
   en: {
     title: "Search Anime",
@@ -780,6 +783,9 @@ const translations = {
     about_title: "About Developer",
     about_role: "Web Developer",
     about_msg: "Thank you for using this website!",
+    greet_morning: "Ohayou! Good Morning ☀️",
+    greet_afternoon: "Konnichiwa! Good Afternoon ☕",
+    greet_evening: "Konbanwa! Anime Time 🌙",
   },
   jp: {
     title: "アニメ検索",
@@ -827,6 +833,9 @@ const translations = {
     about_title: "開発者について",
     about_role: "ウェブ開発者",
     about_msg: "このウェブサイトをご利用いただきありがとうございます！",
+    greet_morning: "おはようございます ☀️",
+    greet_afternoon: "こんにちは ☕",
+    greet_evening: "こんばんは 🌙",
   },
   cn: {
     title: "动漫搜索",
@@ -874,6 +883,9 @@ const translations = {
     about_title: "关于开发者",
     about_role: "网站开发者",
     about_msg: "感谢您使用本网站！",
+    greet_morning: "早上好 ☀️",
+    greet_afternoon: "下午好 ☕",
+    greet_evening: "晚上好 🌙",
   },
 };
 
@@ -984,6 +996,7 @@ function switchMode(mode) {
     document.querySelector('[data-lang="desc"]').innerText = t.desc;
     btn.innerText = t.btnSearch;
   }
+  updateText();
 }
 
 // --- PICK UNIQUE LOGIC ---
@@ -1034,7 +1047,6 @@ async function fetchAndShowDetails(id) {
     const data = await response.json();
     const anime = data.data;
 
-    // STANDARDIZE JIKAN DATA (Sama seperti getAnime)
     const formattedData = {
       mal_id: anime.mal_id,
       title: anime.title,
@@ -1056,12 +1068,14 @@ async function fetchAndShowDetails(id) {
 
 async function getData() {
   playSound(sfxClick);
+  const btn = document.getElementById("btnGacha");
+  const card = document.getElementById("resultCard");
+  const skeleton = document.getElementById("skeletonCard");
   btn.disabled = true;
   btn.innerText = translations[currentLang].btnLoading;
 
-  // Trik: Jangan sembunyikan card dulu kalau mau transisi halus,
-  // tapi user minta 'background ganti', jadi biarkan fungsi display yang handle.
-  // card.style.display = "none";
+  card.style.display = "none";
+  skeleton.style.display = "block";
 
   if (currentMode === "character") await getCharacter();
   else if (currentMode === "donghua") await getDonghua();
@@ -1225,6 +1239,7 @@ async function getAnime() {
     const data = await response.json();
     if (!data.data.length) {
       showToast(translations[currentLang].alertNotFound, "error");
+      document.getElementById("skeletonCard").style.display = "none";
       btn.disabled = false;
       btn.innerText = translations[currentLang].btnAgain;
       return;
@@ -1249,6 +1264,7 @@ async function getAnime() {
     displayAnimeDetails(formattedData);
   } catch (e) {
     showToast("Error/Limit API", "error");
+    document.getElementById("skeletonCard").style.display = "none";
   } finally {
     btn.disabled = false;
     btn.innerText = translations[currentLang].btnAgain;
@@ -1279,7 +1295,8 @@ async function getSimilarAnime() {
 
 // --- FUNGSI RENDER UTAMA (FIX CARD HIDDEN) ---
 function displayAnimeDetails(data) {
-  // 0. Pastikan Card Muncul Dulu (Anti-Macet)
+  document.getElementById("skeletonCard").style.display = "none";
+
   card.style.display = "block";
 
   currentAnimeData = data;
@@ -1341,6 +1358,9 @@ function displayAnimeDetails(data) {
     quoteBox.style.display = "block";
     showRandomQuote();
   }
+
+  card.style.cursor = "pointer";
+  card.onclick = () => openDetail(data);
 
   addToHistory(data);
   checkFavoriteStatus(data.mal_id);
@@ -1513,6 +1533,125 @@ function closeStats() {
   homeView.style.display = "block";
 }
 
+function openDetail(animeData) {
+  playSound(sfxClick);
+  homeView.style.display = "none";
+  document.getElementById("detailView").style.display = "block";
+  if (btnProfile) btnProfile.style.display = "none";
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // Set data
+  document.getElementById("detailPoster").src = animeData.image;
+  document.getElementById("detailTitle").innerText = animeData.title;
+  document.getElementById("detailTitleNative").innerText =
+    animeData.native || "";
+
+  // Clean stats format
+  const scoreValue = animeData.score.replace("⭐ ", "");
+  document.getElementById("detailScore").innerText = scoreValue;
+  document.getElementById("detailEpisodes").innerText =
+    animeData.episodes || "?";
+  document.getElementById("detailStatus").innerText =
+    animeData.status || "Unknown";
+
+  document.getElementById("detailSynopsis").innerText =
+    animeData.synopsis || "No synopsis available.";
+
+  // Links
+  document.getElementById("detailBtnMAL").href = animeData.url;
+
+  // Trailer
+  const trailerBtn = document.getElementById("detailBtnTrailer");
+  if (animeData.trailerUrl) {
+    trailerBtn.href = animeData.trailerUrl;
+    trailerBtn.style.display = "flex";
+  } else {
+    trailerBtn.style.display = "none";
+  }
+
+  // Quote & Similar (hide untuk Character/Donghua)
+  const quoteSection = document.getElementById("detailQuoteSection");
+  const similarBtn = document.getElementById("detailBtnSimilar");
+
+  if (animeData.isCharacter || animeData.isDonghua) {
+    quoteSection.style.display = "none";
+    similarBtn.style.display = "none";
+  } else {
+    quoteSection.style.display = "block";
+    similarBtn.style.display = "flex";
+
+    // Random quote
+    if (animeQuotes && animeQuotes.length) {
+      const q = animeQuotes[Math.floor(Math.random() * animeQuotes.length)];
+      const quoteKey =
+        currentLang === "id"
+          ? "id"
+          : currentLang === "jp"
+          ? "jp"
+          : currentLang === "cn"
+          ? "cn"
+          : "en";
+      document.getElementById("detailQuoteText").innerText = `"${
+        q[quoteKey] || q.id
+      }"`;
+      document.getElementById("detailQuoteChar").innerText = `${q.char}`;
+    }
+  }
+
+  // Simpan data untuk fungsi lain
+  currentAnimeData = animeData;
+  checkFavoriteStatusDetail(animeData.mal_id);
+}
+
+// Close Detail
+function closeDetail() {
+  playSound(sfxClick);
+  document.getElementById("detailView").style.display = "none";
+  homeView.style.display = "block";
+  if (btnProfile) btnProfile.style.display = "flex";
+}
+
+function checkFavoriteStatusDetail(id) {
+  const favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
+  const isFav = favorites.some((item) => item.mal_id == id);
+  const btn = document.getElementById("detailBtnFav");
+  const icon = btn.querySelector("i");
+
+  if (isFav) {
+    icon.classList.replace("far", "fas");
+    btn.classList.add("active");
+  } else {
+    icon.classList.replace("fas", "far");
+    btn.classList.remove("active");
+  }
+}
+
+function toggleFavoriteFromDetail() {
+  toggleFavorite();
+  checkFavoriteStatusDetail(currentAnimeData.mal_id);
+}
+
+function downloadDetailCard() {
+  const wrapper = document.querySelector(".detail-wrapper");
+  html2canvas(wrapper, {
+    useCORS: true,
+    backgroundColor: getComputedStyle(document.body).backgroundColor,
+  }).then((canvas) => {
+    const link = document.createElement("a");
+    link.download = `${currentAnimeData.title}-detail.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+    showToast(translations[currentLang].toast_saved || "Saved!", "success");
+  });
+}
+
+function getSimilarFromDetail() {
+  getSimilarAnime();
+  closeDetail();
+}
+
 function calculateStats() {
   const ctx = document.getElementById("wibuChart").getContext("2d");
   if (myChart) myChart.destroy();
@@ -1590,6 +1729,24 @@ function updateText() {
     else if (currentLang === "cn") q.innerText = `"${currentQuote.cn}"`;
     else q.innerText = `"${currentQuote.en}"`;
   }
+
+  const hour = new Date().getHours();
+  let timeKey = "greet_morning";
+  if (hour >= 12 && hour < 18) timeKey = "greet_afternoon";
+  else if (hour >= 18) timeKey = "greet_evening";
+
+  // Buat elemen sapaan kalau belum ada
+  let greetEl = document.getElementById("greetingText");
+  if (!greetEl) {
+    greetEl = document.createElement("h3");
+    greetEl.id = "greetingText";
+    greetEl.style.marginBottom = "5px";
+    greetEl.style.color = "var(--main-color)";
+    // Sisipkan di bawah judul
+    const titleEl = document.querySelector('h1[data-lang="title"]');
+    titleEl.insertAdjacentElement("afterend", greetEl);
+  }
+  greetEl.innerText = t[timeKey];
 }
 
 colorPicker.addEventListener("input", (e) => {
@@ -1740,3 +1897,4 @@ renderQuickTags();
 getTrendingAnime();
 renderHistory();
 calculateStats();
+updateText();
