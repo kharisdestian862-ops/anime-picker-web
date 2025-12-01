@@ -1756,13 +1756,16 @@ function updateText() {
 }
 
 colorPicker.addEventListener("input", (e) => {
-  document.documentElement.style.setProperty("--main-color", e.target.value);
+  const newColor = e.target.value;
+  document.documentElement.style.setProperty("--main-color", newColor);
+  localStorage.setItem("themeColor", newColor);
 });
 
-// Load Saved Data
 const savedColor = localStorage.getItem("themeColor");
-if (savedColor)
+if (savedColor) {
   document.documentElement.style.setProperty("--main-color", savedColor);
+  colorPicker.value = savedColor;
+}
 
 // Voice
 function startVoiceCommand() {
