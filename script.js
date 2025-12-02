@@ -1525,13 +1525,29 @@ function hideAllViews() {
     document.getElementById("detailView").style.display = "none";
   if (document.getElementById("searchView"))
     document.getElementById("searchView").style.display = "none";
+  if (document.getElementById("scheduleView"))
+    document.getElementById("scheduleView").style.display = "none";
+  if (document.getElementById("learningView"))
+    document.getElementById("learningView").style.display = "none";
+  if (document.getElementById("novelMenuView"))
+    document.getElementById("novelMenuView").style.display = "none";
+  if (document.getElementById("novelReaderView"))
+    document.getElementById("novelReaderView").style.display = "none";
 }
 
 function openDetail(animeData) {
   playSound(sfxClick);
 
-  if (document.getElementById("searchView").style.display === "block") {
+  if (
+    document.getElementById("searchView") &&
+    document.getElementById("searchView").style.display === "block"
+  ) {
     lastView = "searchView";
+  } else if (
+    document.getElementById("scheduleView") &&
+    document.getElementById("scheduleView").style.display === "block"
+  ) {
+    lastView = "scheduleView"; // <--- TAMBAHAN: Deteksi halaman Jadwal
   } else if (
     document.getElementById("favoritesView").style.display === "block"
   ) {
@@ -1616,12 +1632,16 @@ function openDetail(animeData) {
 
 // Close Detail
 function closeDetail() {
+  playSound(sfxClick);
   document.getElementById("detailView").style.display = "none";
 
-  // --- LOGIKA KEMBALI PINTAR (BARU) ---
+  // --- LOGIKA KEMBALI (UPDATE) ---
   if (lastView === "searchView") {
     document.getElementById("searchView").style.display = "block";
-    // Di search view, tombol profil harus sembunyi
+    if (btnProfile) btnProfile.style.display = "none";
+  } else if (lastView === "scheduleView") {
+    // <--- TAMBAHAN: Balik ke Jadwal
+    document.getElementById("scheduleView").style.display = "block";
     if (btnProfile) btnProfile.style.display = "none";
   } else if (lastView === "favoritesView") {
     document.getElementById("favoritesView").style.display = "block";
@@ -1632,7 +1652,7 @@ function closeDetail() {
   } else {
     // Default balik ke Home
     homeView.style.display = "block";
-    if (btnProfile) btnProfile.style.display = "flex"; // Di home baru muncul
+    if (btnProfile) btnProfile.style.display = "flex";
   }
 }
 
@@ -2158,6 +2178,1465 @@ function selectSearchResult(index) {
 
   // Buka Halaman Detail
   openDetail(formattedData);
+}
+
+function openSchedule() {
+  playSound(sfxClick);
+  hideAllViews();
+  document.getElementById("scheduleView").style.display = "block";
+  if (btnProfile) btnProfile.style.display = "none";
+
+  // Otomatis load hari ini saat dibuka
+  const days = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  const today = days[new Date().getDay()];
+  loadSchedule(today);
+}
+
+function closeSchedule() {
+  playSound(sfxClick);
+  document.getElementById("scheduleView").style.display = "none";
+  homeView.style.display = "block";
+  if (btnProfile) btnProfile.style.display = "flex";
+}
+
+async function loadSchedule(day) {
+  playSound(sfxClick);
+
+  // Update tampilan tombol aktif
+  document.querySelectorAll(".day-btn").forEach((btn) => {
+    btn.classList.remove("active");
+    // Cek teks tombol (bisa bahasa indo/inggris tergantung settingan,
+    // tapi logic class active-nya manual aja biar simpel)
+    if (btn.onclick.toString().includes(day)) btn.classList.add("active");
+  });
+
+  const list = document.getElementById("scheduleList");
+  list.innerHTML = '<div class="loading-trending">Memuat Jadwal...</div>';
+
+  try {
+    const response = await fetch(
+      `https://api.jikan.moe/v4/schedules?filter=${day}`
+    );
+    const data = await response.json();
+
+    if (!data.data || data.data.length === 0) {
+      list.innerHTML = "<p style='color:#aaa'>Libur tayang hari ini.</p>";
+      return;
+    }
+
+    // RENDER KARTU (Grid System yang Rapi)
+    list.innerHTML = data.data
+      .map((item) => {
+        // Data untuk Open Detail
+        const animeObj = {
+          mal_id: item.mal_id,
+          title: item.title.replace(/'/g, "\\'"),
+          native: item.title_japanese,
+          image: item.images.jpg.large_image_url,
+          url: item.url,
+          score: "⭐ " + (item.score || "N/A"),
+          episodes: item.episodes,
+          status: item.status,
+          synopsis: item.synopsis
+            ? item.synopsis.replace(/'/g, "\\'").replace(/\n/g, " ")
+            : "-",
+          trailerUrl: item.trailer ? item.trailer.url : null,
+          isCharacter: false,
+          isDonghua: false,
+        };
+        // Encode biar aman
+        const dataStr = encodeURIComponent(JSON.stringify(animeObj));
+
+        // Format Jam (Jikan kasih waktu Jepang JST, kita tampilkan mentah aja atau sesuaikan nanti)
+        const time = item.broadcast.time || "??:??";
+
+        return `
+            <div class="trending-item" onclick="openDetail(JSON.parse(decodeURIComponent('${dataStr}')))">
+                <img src="${item.images.jpg.image_url}" class="trending-poster">
+                <div class="trending-title">${item.title}</div>
+                <span class="schedule-time">⏰ ${time}</span>
+            </div>
+            `;
+      })
+      .join("");
+  } catch (e) {
+    list.innerHTML = "<p>Gagal memuat jadwal.</p>";
+  }
+}
+
+function updateClock() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  const clockEl = document.getElementById("realTimeClock");
+  if (clockEl) {
+    clockEl.innerText = `${hours}:${minutes}`;
+  }
+}
+
+// Jalankan jam setiap detik
+setInterval(updateClock, 1000);
+updateClock();
+
+// --- FITUR NAME GENERATOR (UPDATE: GACHA RANDOM) ---
+
+const jpSurnames = [
+  "Sato (佐藤)",
+  "Suzuki (鈴木)",
+  "Takahashi (高橋)",
+  "Tanaka (田中)",
+  "Watanabe (渡辺)",
+  "Ito (伊藤)",
+  "Yamamoto (山本)",
+  "Nakamura (中村)",
+  "Kobayashi (小林)",
+  "Kato (加藤)",
+  "Yoshida (吉田)",
+  "Yamada (山田)",
+  "Sasaki (佐々木)",
+  "Yamaguchi (山口)",
+  "Matsumoto (松本)",
+  "Inoue (井上)",
+  "Kimura (木村)",
+  "Hayashi (林)",
+  "Shimizu (清水)",
+  "Saito (斉藤)",
+
+  "Hasegawa (長谷川)",
+  "Saito (斎藤)",
+  "Abe (阿部)",
+  "Ono (小野)",
+  "Ishikawa (石川)",
+  "Nakajima (中島)",
+  "Harada (原田)",
+  "Fujita (藤田)",
+  "Ogawa (小川)",
+  "Maeda (前田)",
+  "Okada (岡田)",
+  "Fukuda (福田)",
+  "Ueda (上田)",
+  "Ishii (石井)",
+  "Hashimoto (橋本)",
+  "Mori (森)",
+  "Shibata (柴田)",
+  "Aoki (青木)",
+  "Endo (遠藤)",
+  "Kubo (久保)",
+
+  "Kondo (近藤)",
+  "Murakami (村上)",
+  "Miyazaki (宮崎)",
+  "Hirano (平野)",
+  "Ota (太田)",
+  "Nakagawa (中川)",
+  "Kawakami (川上)",
+  "Sugiyama (杉山)",
+  "Higuchi (樋口)",
+  "Matsuda (松田)",
+  "Tsuchiya (土屋)",
+  "Kojima (小島)",
+  "Noguchi (野口)",
+  "Kaneko (金子)",
+  "Mizuno (水野)",
+  "Honda (本田)",
+  "Masuda (増田)",
+  "Kawamoto (川本)",
+  "Takeda (武田)",
+  "Tsuchida (土田)",
+
+  "Morita (森田)",
+  "Sakurai (桜井)",
+  "Ikeda (池田)",
+  "Tamura (田村)",
+  "Sugimoto (杉本)",
+  "Takeuchi (竹内)",
+  "Iwata (岩田)",
+  "Miyamoto (宮本)",
+  "Kudo (工藤)",
+  "Oshima (大島)",
+  "Saito (西藤)",
+  "Nishimura (西村)",
+  "Kinoshita (木下)",
+  "Ogiwara (荻原)",
+  "Suenaga (末永)",
+  "Okamoto (岡本)",
+  "Oikawa (及川)",
+  "Tachibana (橘)",
+  "Fujimoto (藤本)",
+  "Hattori (服部)",
+
+  "Kuroda (黒田)",
+  "Onishi (大西)",
+  "Itakura (板倉)",
+  "Nagai (永井)",
+  "Furukawa (古川)",
+  "Kawaguchi (川口)",
+  "Tada (多田)",
+  "Sudo (須藤)",
+  "Tanimoto (谷本)",
+  "Hori (堀)",
+  "Kamata (鎌田)",
+  "Kurokawa (黒川)",
+  "Shindo (新堂)",
+  "Sakai (坂井)",
+  "Ishida (石田)",
+  "Kusano (草野)",
+  "Amemiya (雨宮)",
+  "Shinoda (篠田)",
+  "Shimura (志村)",
+  "Kawai (河合)",
+
+  "Wada (和田)",
+  "Tsuchiyama (土山)",
+  "Nomura (野村)",
+  "Iida (飯田)",
+  "Hirano (平野)",
+  "Kawakami (川上)",
+  "Uchimura (内村)",
+  "Kikuchi (菊池)",
+  "Tsunoda (角田)",
+  "Soma (相馬)",
+  "Iwasaki (岩崎)",
+  "Matsuo (松尾)",
+  "Otsuka (大塚)",
+  "Kumagai (熊谷)",
+  "Kayama (加山)",
+  "Nakano (中野)",
+  "Ando (安藤)",
+  "Soma (相馬)",
+  "Takayama (高山)",
+  "Koyama (小山)",
+
+  "Tsukamoto (塚本)",
+  "Kirigaya (桐ヶ谷)",
+  "Ogasawara (小笠原)",
+  "Asano (浅野)",
+  "Amano (天野)",
+  "Mochizuki (望月)",
+  "Tsunemi (常見)",
+  "Shirakawa (白川)",
+  "Kurobane (黒羽)",
+  "Kamitani (上谷)",
+  "Okui (奥井)",
+  "Masaki (正木)",
+  "Saeki (佐伯)",
+  "Komatsu (小松)",
+  "Nagata (永田)",
+  "Fujisawa (藤沢)",
+  "Kishimoto (岸本)",
+  "Kuga (久我)",
+  "Mido (御堂)",
+  "Aizawa (相沢)",
+
+  "Tsuchimura (土村)",
+  "Sakaguchi (坂口)",
+  "Takizawa (滝沢)",
+  "Shirogane (白銀)",
+  "Kuga (久我)",
+  "Yokoyama (横山)",
+  "Kawahara (河原)",
+  "Miyake (三宅)",
+  "Tokugawa (徳川)",
+  "Kiryu (桐生)",
+  "Sonoda (園田)",
+  "Shimazu (島津)",
+  "Minamoto (源)",
+  "Taira (平)",
+  "Suenaga (末永)",
+  "Shindo (進藤)",
+  "Arakawa (荒川)",
+  "Tanimizu (谷水)",
+  "Hoshino (星野)",
+
+  "Takane (高嶺)",
+  "Kujo (九条)",
+  "Nanjo (南条)",
+  "Saionji (西園寺)",
+  "Seike (清家)",
+  "Hino (日野)",
+  "Kuga (久賀)",
+  "Mibu (壬生)",
+  "Matsunaga (松永)",
+  "Toda (戸田)",
+  "Akechi (明智)",
+  "Tsuda (津田)",
+  "Oda (織田)",
+  "Toyotomi (豊臣)",
+  "Shibasaki (柴崎)",
+  "Naruse (成瀬)",
+  "Kaneshiro (金城)",
+  "Sumeragi (皇)",
+  "Misawa (三沢)",
+  "Uesugi (上杉)",
+];
+
+const jpFirstNames = [
+  "Haruto (陽斗)",
+  "Yuto (悠斗)",
+  "Sota (颯太)",
+  "Minato (湊)",
+  "Riku (陸)",
+  "Kaito (海斗)",
+  "Asahi (朝日)",
+  "Hinata (陽向)",
+  "Arata (新)",
+  "Ren (蓮)",
+  "Yui (結衣)",
+  "Akari (あかり)",
+  "Hina (陽菜)",
+  "Mei (芽依)",
+  "Sakura (咲良)",
+  "Mio (美桜)",
+  "Aoi (葵)",
+  "Rin (凛)",
+  "Himari (陽葵)",
+  "Kanna (栞奈)",
+
+  "Takumi (匠)",
+  "Rei (怜)",
+  "Haru (春)",
+  "Itsuki (一樹)",
+  "Yuya (悠也)",
+  "Shun (俊)",
+  "Ryota (涼太)",
+  "Keita (慧太)",
+  "Shiro (四郎)",
+  "Kazuki (和輝)",
+  "Ayaka (彩花)",
+  "Natsumi (夏美)",
+  "Misaki (美咲)",
+  "Haruka (遥)",
+  "Ayane (彩音)",
+  "Miyu (美優)",
+  "Nanase (七瀬)",
+  "Chihiro (千尋)",
+  "Kokoro (心)",
+  "Ema (絵馬)",
+
+  "Daiki (大輝)",
+  "Naoki (直樹)",
+  "Tatsuya (達也)",
+  "Kazuma (一真)",
+  "Makoto (誠)",
+  "Toru (徹)",
+  "Shoya (翔也)",
+  "Kosei (康生)",
+  "Ayato (綾人)",
+  "Haruki (春樹)",
+  "Noa (乃愛)",
+  "Miyuki (美雪)",
+  "Hinano (陽菜乃)",
+  "Yume (夢)",
+  "Sumire (菫)",
+  "Kaho (夏穂)",
+  "Kaede (楓)",
+  "Arisa (有紗)",
+  "Ririka (莉々花)",
+  "Sara (沙羅)",
+
+  "Shinji (慎二)",
+  "Akira (明)",
+  "Ayumu (歩夢)",
+  "Shion (紫苑)",
+  "Ichika (一花)",
+  "Miku (美久)",
+  "Hana (花)",
+  "Ai (愛)",
+  "Miki (美紀)",
+  "Ami (亜美)",
+  "Ryo (涼)",
+  "Sora (空)",
+  "Yoru (夜)",
+  "Reina (玲奈)",
+  "Kanon (花音)",
+  "Sayaka (沙耶香)",
+  "Yoshino (佳乃)",
+  "Reona (玲音)",
+  "Yuna (優奈)",
+  "Maho (真帆)",
+
+  "Kenji (健二)",
+  "Hiroshi (博)",
+  "Kenta (健太)",
+  "Jun (純)",
+  "Goro (五郎)",
+  "Takeru (武)",
+  "Satoru (悟)",
+  "Hideo (英夫)",
+  "Yuji (雄二)",
+  "Osamu (修)",
+  "Atsushi (篤志)",
+  "Katsuo (勝男)",
+  "Shigeru (茂)",
+  "Masaru (勝)",
+  "Fumio (文雄)",
+  "Noboru (昇)",
+  "Ryohei (涼平)",
+  "Koji (浩二)",
+  "Masashi (雅志)",
+  "Shuhei (周平)",
+
+  "Minami (美波)",
+  "Koharu (小春)",
+  "Yukina (雪奈)",
+  "Ayu (亜由)",
+  "Hiori (日和)",
+  "Mizuki (瑞希)",
+  "Ayame (菖蒲)",
+  "Tsukasa (司)",
+  "Yura (由良)",
+  "Akane (茜)",
+  "Hotaru (蛍)",
+  "Nazuna (なずな)",
+  "Rikka (立夏)",
+  "Towa (永遠)",
+  "Yozora (夜空)",
+
+  "Hikaru (光)",
+  "Kaoru (薫)",
+  "Nao (直)",
+  "Sei (誠)",
+  "Rui (瑠衣)",
+  "Haruya (春也)",
+  "Kazuto (和人)",
+  "Shoma (将馬)",
+  "Kou (光)",
+  "Yuuto (優斗)",
+  "Momoka (桃花)",
+  "Yurika (百合香)",
+  "Harumi (春美)",
+  "Riko (莉子)",
+  "Rina (里奈)",
+  "Maya (麻耶)",
+  "Kira (綺羅)",
+  "Rion (莉音)",
+  "Hikari (ひかり)",
+  "Meari (芽亜里)",
+
+  "Taiga (大雅)",
+  "Yoshito (義人)",
+  "Ranmaru (蘭丸)",
+  "Hayato (隼人)",
+  "Kakeru (翔)",
+  "Natsuo (夏生)",
+  "Ryunosuke (竜之介)",
+  "Shunpei (俊平)",
+  "Issei (一誠)",
+  "Kaito (魁斗)",
+  "Kohaku (琥珀)",
+  "Shizuku (雫)",
+  "Asuka (明日香)",
+  "Kagura (神楽)",
+  "Suzu (鈴)",
+  "Kuro (黒)",
+  "Shiori (栞)",
+  "Aira (愛羅)",
+  "Minori (実乃里)",
+  "Kokoa (心愛)",
+
+  "Touma (冬馬)",
+  "Reiji (礼二)",
+  "Iori (伊織)",
+  "Fuma (風真)",
+  "Kazehaya (風早)",
+  "Mido (翠)",
+  "Shido (司堂)",
+  "Kyouka (響華)",
+  "Yotsuba (四葉)",
+  "Itsuki (五月)",
+  "Amane (天音)",
+  "Reito (礼人)",
+  "Kousuke (幸介)",
+  "Jiro (次郎)",
+  "Taichi (太一)",
+  "Mirei (未来)",
+  "Asahi (旭)",
+  "Suzume (雀)",
+  "Mitsuki (光月)",
+  "Himeno (姫乃)",
+
+  "Atsumi (温美)",
+  "Rio (莉央)",
+  "Nozomi (望)",
+  "Ayumi (歩美)",
+  "Kotori (小鳥)",
+  "Miyako (都)",
+  "Kaho (花帆)",
+  "Shuka (朱夏)",
+  "Yukari (由香里)",
+  "Aine (愛音)",
+  "Kanon (奏音)",
+  "Satsuki (皐月)",
+  "Mahiro (真広)",
+  "Kiyoko (清子)",
+  "Ritsu (律)",
+  "Tsumugi (紬)",
+  "Yukito (雪人)",
+  "Kaito (海翔)",
+  "Shuya (修也)",
+  "Hizuki (陽月)",
+];
+
+const jpSuffixes = [
+  "no Kami (の神)",
+  "Zerol (ゼロ)",
+  "San (さん)",
+  "Sama (様)",
+  "Kun (君)",
+  "Chan (ちゃん)",
+  "Senpai (先輩)",
+  "Sensei (先生)",
+  "Dono (殿)",
+  "Hime (姫)",
+  "Ouji (王子)",
+  "Taichou (隊長)",
+  "Shogun (将軍)",
+  "Tenshi (天使)",
+  "Akuma (悪魔)",
+  "Ryuu (竜)",
+  "Kage (影)",
+
+  // --- Tambahan sampai 200 ---
+  "Kami (神)",
+  "Hikari (光)",
+  "Yami (闇)",
+  "Tsuki (月)",
+  "Taiyou (太陽)",
+  "Koori (氷)",
+  "Honoō (炎)",
+  "Kitsune (狐)",
+  "Ookami (狼)",
+  "Tora (虎)",
+  "Neko (猫)",
+  "Majin (魔人)",
+  "Shinigami (死神)",
+  "Ninja (忍者)",
+  "Ronin (浪人)",
+  "Onmyoji (陰陽師)",
+  "Kensei (剣聖)",
+  "Kenshi (剣士)",
+  "Seijin (聖人)",
+  "Kaijin (怪人)",
+  "Seiryu (青龍)",
+  "Suzaku (朱雀)",
+  "Byakko (白虎)",
+  "Genbu (玄武)",
+  "Arashi (嵐)",
+  "Hayate (疾風)",
+  "Kaminari (雷)",
+  "Raijin (雷神)",
+  "Fujin (風神)",
+  "Kuro (黒)",
+  "Shiro (白)",
+  "Aoi (青)",
+  "Midori (緑)",
+  "Kurenai (紅)",
+  "Murasaki (紫)",
+  "Gin (銀)",
+  "Kin (金)",
+  "Yoroi (鎧)",
+  "Tsurugi (剣)",
+  "Katana (刀)",
+  "Hana (花)",
+  "Kazehana (風花)",
+  "Yukihana (雪花)",
+  "Hoshizora (星空)",
+  "Ginga (銀河)",
+  "Yoru (夜)",
+  "Asa (朝)",
+  "Himawari (向日葵)",
+  "Kagerou (陽炎)",
+  "Akebono (曙)",
+  "Gekkou (月光)",
+  "Tenshiou (天将)",
+  "Yukimura (雪村)",
+  "Yukine (雪音)",
+  "Hanabira (花びら)",
+  "Inari (稲荷)",
+  "Mikoto (命)",
+  "Miko (巫女)",
+  "Mikado (帝)",
+  "Reikon (霊魂)",
+  "Tamashii (魂)",
+  "Seishin (精神)",
+  "Reiki (霊気)",
+  "Shizuku (雫)",
+  "Shigure (時雨)",
+  "Ame (雨)",
+  "Kurogane (黒金)",
+  "Shirogane (白銀)",
+  "Aogane (青金)",
+  "Tsubasa (翼)",
+  "Oni (鬼)",
+  "Oniwaka (鬼若)",
+  "Kaede (楓)",
+  "Rikka (六花)",
+  "Haru (春)",
+  "Natsu (夏)",
+  "Aki (秋)",
+  "Fuyu (冬)",
+  "Miyabi (雅)",
+  "Kazuki (一樹)",
+  "Reisen (霊仙)",
+  "Kazama (風間)",
+  "Homura (焔)",
+  "Kurohana (黒花)",
+  "Amehana (雨花)",
+  "Hoshino (星野)",
+  "Yukino (雪乃)",
+  "Kuroyuki (黒雪)",
+  "Amaterasu (天照)",
+  "Susanoo (須佐之男)",
+  "Tsukuyomi (月読)",
+  "Kemono (獣)",
+  "Mahou (魔法)",
+  "Tenshiou (天翔)",
+  "Seika (聖火)",
+  "Hibana (火花)",
+  "Enma (閻魔)",
+  "Reaper (死神/リーパー)",
+  "Knight (騎士)",
+  "Blade (ブレード)",
+  "Storm (ストーム)",
+  "Zero (ゼロ)",
+  "Omega (オメガ)",
+  "Alpha (アルファ)",
+  "Sigma (シグマ)",
+  "Kagehana (影花)",
+  "Yukikage (雪影)",
+  "Ameboshi (雨星)",
+  "Kazekage (風影)",
+  "Hoshikage (星影)",
+  "Tsukinowa (月輪)",
+  "Ryuusei (流星)",
+  "Tenshou (天照)",
+  "Kamigami (神々)",
+  "Seiya (聖夜)",
+  "Hajime (始め)",
+  "Itsuki (樹)",
+  "Rin (凛)",
+  "Rion (リオン)",
+  "Kaoru (薫)",
+  "Makoto (誠)",
+  "Satsuki (皐月)",
+  "Shigurehana (時雨花)",
+  "Arisawa (有沢)",
+  "Momiji (紅葉)",
+  "Sakura (桜)",
+  "Kurotsuki (黒月)",
+  "Shirotsuki (白月)",
+  "Aotsuki (青月)",
+  "Hoshitsuki (星月)",
+  "Kaminarihana (雷花)",
+  "Todoroki (轟)",
+  "Kaien (海炎)",
+  "Kaiten (回天)",
+  "Kurousagi (黒兎)",
+  "Usagi (兎)",
+  "Tenshihana (天使花)",
+  "Kurokami (黒髪)",
+  "Shirokami (白髪)",
+  "Aokami (青髪)",
+  "Tsukihana (月花)",
+  "Amakaze (天風)",
+  "Yukikaze (雪風)",
+  "Genkai (限界)",
+  "Shura (修羅)",
+  "Gouka (豪火)",
+  "Katon (火遁)",
+  "Suiton (水遁)",
+  "Doton (土遁)",
+  "Raiton (雷遁)",
+  "Fuuton (風遁)",
+  "Makaze (魔風)",
+  "Rekka (烈火)",
+  "Torao (虎王)",
+  "Ou (王)",
+  "Meiou (冥王)",
+  "Kishi (騎士)",
+  "Tenshiou (天将)",
+  "Shinsei (神聖)",
+  "Kokuou (黒王)",
+  "Hakuou (白王)",
+  "Kinzoku (金属)",
+  "Seiraku (清楽)",
+  "Kageou (影王)",
+  "Akatsuki (暁)",
+  "Tensei (転生)",
+  "Shinsei (新星)",
+  "Shuraou (修羅王)",
+  "Rekkaou (烈火王)",
+  "Yasai (野菜)", // bonus random lucu
+  "Pandora (パンドラ)",
+  "Kiseki (奇跡)",
+  "Shunkan (瞬間)",
+  "Kuronuma (黒沼)",
+  "Shion (紫苑)",
+  "Kagutsuchi (迦具土)",
+  "Kirin (麒麟)",
+  "Hakuryuu (白竜)",
+  "Kokuryuu (黒竜)",
+  "Seiryuuou (青龍王)",
+  "Tenshin (天心)",
+  "Seiryou (清涼)",
+  "Kokoro (心)",
+
+  // biar pas 200
+  "Yukishiro (雪白)",
+  "Shiroyuki (白雪)",
+  "Hane (羽)",
+  "Toki (時)",
+  "Rei (霊)",
+  "Kyojin (巨人)",
+  "Kibou (希望)",
+  "Tsukikage (月影)",
+  "Akakage (赤影)",
+  "Aokage (青影)",
+  "Kurokage (黒影)",
+  "Shinkai (深海)",
+  "Kaigan (海岸)",
+  "Ryuukaze (竜風)",
+  "Ametsuki (雨月)",
+  "Hoshiai (星愛)",
+  "Gekkouhana (月光花)",
+  "Senkou (閃光)",
+  "Seikou (成功)",
+];
+
+function openNameGen() {
+  playSound(sfxClick);
+  hideAllViews(); // Pastikan fungsi hideAllViews sudah ada & menutup view lain
+  document.getElementById("nameGenView").style.display = "block";
+  if (btnProfile) btnProfile.style.display = "none";
+}
+
+function closeNameGen() {
+  playSound(sfxClick);
+  document.getElementById("nameGenView").style.display = "none";
+  homeView.style.display = "block";
+  if (btnProfile) btnProfile.style.display = "flex";
+}
+
+function generateJapaneseName() {
+  playSound(sfxClick);
+
+  // 1. Ambil Surname Acak
+  const surname = jpSurnames[Math.floor(Math.random() * jpSurnames.length)];
+
+  // 2. Ambil First Name Acak
+  const firstName =
+    jpFirstNames[Math.floor(Math.random() * jpFirstNames.length)];
+
+  // 🔥 20% kemungkinan (3 kata), 80% (2 kata)
+  const isThreeWords = Math.random() < 0.2;
+
+  let fullName = "";
+  let meaning = "";
+
+  if (isThreeWords) {
+    const suffix = jpSuffixes[Math.floor(Math.random() * jpSuffixes.length)];
+    fullName = `${surname} ${firstName} ${suffix}`;
+    meaning = "✨ Nama Legendaris (3 Kata) ✨";
+  } else {
+    fullName = `${surname} ${firstName}`;
+    meaning = "Nama Standar";
+  }
+
+  // Tampilkan Hasil
+  const resultBox = document.getElementById("nameResult");
+  resultBox.style.display = "block";
+
+  // Efek Animasi Reset
+  resultBox.style.animation = "none";
+  resultBox.offsetHeight;
+  resultBox.style.animation = "popUp 0.3s ease";
+
+  document.getElementById("jpNameResult").innerText = fullName;
+  document.getElementById("jpNameMeaning").innerText = meaning;
+
+  if (isThreeWords) {
+    document.getElementById("jpNameMeaning").style.color = "#f1c40f";
+    playSound(sfxSuccess);
+  } else {
+    document.getElementById("jpNameMeaning").style.color = "var(--main-color)";
+  }
+}
+
+const jlptData = {
+  n5: {
+    title: "JLPT N5 (Pemula)",
+    topics: [
+      { id: "grammar", title: "Tata Bahasa (Grammar)", icon: "fa-book" },
+      { id: "vocab", title: "Kosa Kata (Vocabulary)", icon: "fa-font" },
+      { id: "kanji", title: "Kanji Dasar", icon: "fa-pen-nib" },
+    ],
+    content: {
+      grammar: [
+        {
+          id: "wa-vs-ga",
+          title: "Partikel: は (Wa) vs が (Ga)",
+          summary: "は menandakan topik, が menandakan subjek/penekanan.",
+          details: `
+                        <div class="lesson-section">
+                            <h3 class="lesson-h3">Penjelasan Singkat</h3>
+                            <p><strong>は (Wa)</strong> digunakan untuk topik. <strong>が (Ga)</strong> menekankan subjek baru.</p>
+                        </div>
+                        <div class="lesson-section">
+                            <h3 class="lesson-h3">Contoh</h3>
+                            <div class="example-box">
+                                <span class="jp-text">私は学生です。</span>
+                                <span class="ro-text">Watashi wa gakusei desu.</span>
+                                <span class="id-text">Saya adalah siswa.</span>
+                            </div>
+                            <div class="example-box">
+                                <span class="jp-text">誰が来ますか？</span>
+                                <span class="ro-text">Dare ga kimasu ka?</span>
+                                <span class="id-text">Siapa yang datang?</span>
+                            </div>
+                        </div>
+                    `,
+        },
+        {
+          id: "particle-wo",
+          title: "Partikel: を (Wo/O)",
+          summary: "Digunakan untuk objek langsung.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">パンを食べます。</span>
+                            <span class="ro-text">Pan o tabemasu.</span>
+                            <span class="id-text">Saya makan roti.</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "particle-ni",
+          title: "Partikel: に (Ni)",
+          summary: "Menunjukkan waktu, lokasi, tujuan.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">学校に行きます。</span>
+                            <span class="ro-text">Gakkou ni ikimasu.</span>
+                            <span class="id-text">Pergi ke sekolah.</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "particle-de",
+          title: "Partikel: で (De)",
+          summary: "Tempat terjadinya aktivitas.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">家で勉強します。</span>
+                            <span class="ro-text">Ie de benkyou shimasu.</span>
+                            <span class="id-text">Belajar di rumah.</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "tai-form",
+          title: "Bentuk 〜たい (Ingin ...)",
+          summary: "Menyatakan keinginan.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">寿司を食べたい。</span>
+                            <span class="ro-text">Sushi o tabetai.</span>
+                            <span class="id-text">Ingin makan sushi.</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "masenka-invite",
+          title: "Bentuk 〜ませんか (Ayo ...?)",
+          summary: "Ajakan sopan.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">一緒に行きませんか？</span>
+                            <span class="ro-text">Issho ni ikimasen ka?</span>
+                            <span class="id-text">Mau pergi bareng?</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "mashou",
+          title: "Bentuk 〜ましょう (Mari ...)",
+          summary: "Mengajak melakukan sesuatu.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">始めましょう！</span>
+                            <span class="ro-text">Hajimemashou!</span>
+                            <span class="id-text">Ayo mulai!</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "adjectives",
+          title: "Kata Sifat: い-Adjective & な-Adjective",
+          summary: "Dua tipe dasar sifat.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">大きい犬</span>
+                            <span class="ro-text">Ookii inu</span>
+                            <span class="id-text">Anjing besar</span>
+                        </div>
+                        <div class="example-box">
+                            <span class="jp-text">静かな町</span>
+                            <span class="ro-text">Shizuka na machi</span>
+                            <span class="id-text">Kota yang tenang</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "wa-ga-adj",
+          title: "Pola: A は B が Adjective",
+          summary: "Menyatakan 'A memiliki B yang ...'",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">日本は山が多いです。</span>
+                            <span class="ro-text">Nihon wa yama ga ooi desu.</span>
+                            <span class="id-text">Jepang memiliki banyak gunung.</span>
+                        </div>
+                    `,
+        },
+        {
+          id: "te-form",
+          title: "Bentuk 〜て (Te-form)",
+          summary: "Menyambung kalimat atau permintaan.",
+          details: `
+                        <div class="example-box">
+                            <span class="jp-text">待ってください。</span>
+                            <span class="ro-text">Matte kudasai.</span>
+                            <span class="id-text">Tolong tunggu.</span>
+                        </div>
+                    `,
+        },
+      ],
+
+      vocab: [
+        { kanji: "私", kana: "わたし", romaji: "Watashi", mean: "Saya" },
+        { kanji: "あなた", kana: "あなた", romaji: "Anata", mean: "Kamu" },
+        { kanji: "人", kana: "ひと", romaji: "Hito", mean: "Orang" },
+        { kanji: "友達", kana: "ともだち", romaji: "Tomodachi", mean: "Teman" },
+        { kanji: "猫", kana: "ねこ", romaji: "Neko", mean: "Kucing" },
+        { kanji: "犬", kana: "いぬ", romaji: "Inu", mean: "Anjing" },
+        { kanji: "水", kana: "みず", romaji: "Mizu", mean: "Air" },
+        { kanji: "火", kana: "ひ", romaji: "Hi", mean: "Api" },
+        { kanji: "食べる", kana: "たべる", romaji: "Taberu", mean: "Makan" },
+        { kanji: "飲む", kana: "のむ", romaji: "Nomu", mean: "Minum" },
+        { kanji: "行く", kana: "いく", romaji: "Iku", mean: "Pergi" },
+        { kanji: "来る", kana: "くる", romaji: "Kuru", mean: "Datang" },
+        { kanji: "見る", kana: "みる", romaji: "Miru", mean: "Melihat" },
+        { kanji: "聞く", kana: "きく", romaji: "Kiku", mean: "Mendengar" },
+        { kanji: "大きい", kana: "おおきい", romaji: "Ookii", mean: "Besar" },
+        { kanji: "小さい", kana: "ちいさい", romaji: "Chiisai", mean: "Kecil" },
+        {
+          kanji: "新しい",
+          kana: "あたらしい",
+          romaji: "Atarashii",
+          mean: "Baru",
+        },
+        { kanji: "古い", kana: "ふるい", romaji: "Furui", mean: "Lama" },
+        {
+          kanji: "高い",
+          kana: "たかい",
+          romaji: "Takai",
+          mean: "Tinggi/Mahal",
+        },
+        { kanji: "安い", kana: "やすい", romaji: "Yasui", mean: "Murah" },
+        { kanji: "好き", kana: "すき", romaji: "Suki", mean: "Suka" },
+        { kanji: "嫌い", kana: "きらい", romaji: "Kirai", mean: "Tidak suka" },
+        { kanji: "学校", kana: "がっこう", romaji: "Gakkou", mean: "Sekolah" },
+        { kanji: "先生", kana: "せんせい", romaji: "Sensei", mean: "Guru" },
+        { kanji: "学生", kana: "がくせい", romaji: "Gakusei", mean: "Pelajar" },
+        { kanji: "車", kana: "くるま", romaji: "Kuruma", mean: "Mobil" },
+        { kanji: "本", kana: "ほん", romaji: "Hon", mean: "Buku" },
+        { kanji: "家", kana: "いえ", romaji: "Ie", mean: "Rumah" },
+        { kanji: "駅", kana: "えき", romaji: "Eki", mean: "Stasiun" },
+        { kanji: "道", kana: "みち", romaji: "Michi", mean: "Jalan" },
+        { kanji: "雨", kana: "あめ", romaji: "Ame", mean: "Hujan" },
+        { kanji: "雪", kana: "ゆき", romaji: "Yuki", mean: "Salju" },
+        { kanji: "山", kana: "やま", romaji: "Yama", mean: "Gunung" },
+        { kanji: "川", kana: "かわ", romaji: "Kawa", mean: "Sungai" },
+        { kanji: "海", kana: "うみ", romaji: "Umi", mean: "Laut" },
+        { kanji: "空", kana: "そら", romaji: "Sora", mean: "Langit" },
+        { kanji: "朝", kana: "あさ", romaji: "Asa", mean: "Pagi" },
+        { kanji: "昼", kana: "ひる", romaji: "Hiru", mean: "Siang" },
+        { kanji: "夜", kana: "よる", romaji: "Yoru", mean: "Malam" },
+        { kanji: "今日", kana: "きょう", romaji: "Kyou", mean: "Hari ini" },
+        { kanji: "明日", kana: "あした", romaji: "Ashita", mean: "Besok" },
+        { kanji: "昨日", kana: "きのう", romaji: "Kinou", mean: "Kemarin" },
+      ],
+
+      kanji: [
+        {
+          kanji: "日",
+          kana: "ひ/にち",
+          romaji: "hi/nichi",
+          mean: "Hari/Matahari",
+        },
+        {
+          kanji: "月",
+          kana: "つき/げつ",
+          romaji: "tsuki/getsu",
+          mean: "Bulan",
+        },
+        { kanji: "火", kana: "ひ/か", romaji: "hi/ka", mean: "Api" },
+        { kanji: "水", kana: "みず/すい", romaji: "mizu/sui", mean: "Air" },
+        { kanji: "木", kana: "き/もく", romaji: "ki/moku", mean: "Pohon" },
+        {
+          kanji: "金",
+          kana: "かね/きん",
+          romaji: "kane/kin",
+          mean: "Emas/Uang",
+        },
+        { kanji: "土", kana: "つち/ど", romaji: "tsuchi/do", mean: "Tanah" },
+        { kanji: "山", kana: "やま", romaji: "yama", mean: "Gunung" },
+        { kanji: "川", kana: "かわ", romaji: "kawa", mean: "Sungai" },
+        { kanji: "人", kana: "ひと", romaji: "hito", mean: "Orang" },
+        { kanji: "口", kana: "くち", romaji: "kuchi", mean: "Mulut" },
+        { kanji: "目", kana: "め", romaji: "me", mean: "Mata" },
+        { kanji: "手", kana: "て", romaji: "te", mean: "Tangan" },
+        { kanji: "足", kana: "あし", romaji: "ashi", mean: "Kaki" },
+        { kanji: "力", kana: "ちから", romaji: "chikara", mean: "Kekuatan" },
+        { kanji: "気", kana: "き", romaji: "ki", mean: "Energi" },
+        { kanji: "車", kana: "くるま", romaji: "kuruma", mean: "Mobil" },
+        { kanji: "門", kana: "もん", romaji: "mon", mean: "Gerbang" },
+        { kanji: "本", kana: "ほん", romaji: "hon", mean: "Buku" },
+        { kanji: "学", kana: "がく", romaji: "gaku", mean: "Belajar" },
+        { kanji: "生", kana: "せい", romaji: "sei", mean: "Hidup" },
+        { kanji: "先", kana: "せん", romaji: "sen", mean: "Sebelumnya" },
+        {
+          kanji: "大",
+          kana: "だい/おおきい",
+          romaji: "dai/ookii",
+          mean: "Besar",
+        },
+        {
+          kanji: "小",
+          kana: "しょう/ちいさい",
+          romaji: "shou/chiisai",
+          mean: "Kecil",
+        },
+        {
+          kanji: "中",
+          kana: "ちゅう/なか",
+          romaji: "chuu/naka",
+          mean: "Tengah",
+        },
+        { kanji: "上", kana: "うえ", romaji: "ue", mean: "Atas" },
+        { kanji: "下", kana: "した", romaji: "shita", mean: "Bawah" },
+        { kanji: "左", kana: "ひだり", romaji: "hidari", mean: "Kiri" },
+        { kanji: "右", kana: "みぎ", romaji: "migi", mean: "Kanan" },
+        { kanji: "何", kana: "なに", romaji: "nani", mean: "Apa" },
+        { kanji: "名", kana: "な/めい", romaji: "na/mei", mean: "Nama" },
+        { kanji: "年", kana: "とし/ねん", romaji: "toshi/nen", mean: "Tahun" },
+        { kanji: "時", kana: "とき/じ", romaji: "toki/ji", mean: "Waktu/Jam" },
+        {
+          kanji: "間",
+          kana: "あいだ/かん",
+          romaji: "aida/kan",
+          mean: "Antara",
+        },
+        { kanji: "先", kana: "さき", romaji: "saki", mean: "Depan" },
+        { kanji: "円", kana: "えん", romaji: "en", mean: "Yen" },
+        { kanji: "休", kana: "やすむ", romaji: "yasumu", mean: "Istirahat" },
+        { kanji: "食", kana: "たべる", romaji: "taberu", mean: "Makan" },
+        { kanji: "飲", kana: "のむ", romaji: "nomu", mean: "Minum" },
+      ],
+    },
+  },
+  n4: { title: "JLPT N4 (Dasar Lanjutan)", topics: [] },
+  n3: { title: "JLPT N3 (Menengah)", topics: [] },
+  n2: { title: "JLPT N2 (Bisnis)", topics: [] },
+  n1: { title: "JLPT N1 (Ahli)", topics: [] },
+};
+
+// 2. NAVIGASI LEARNING
+function openLearning() {
+  playSound(sfxClick);
+  hideAllViews();
+  document.getElementById("learningView").style.display = "block";
+  if (btnProfile) btnProfile.style.display = "none";
+  renderLevels(); // Tampilkan menu awal
+}
+
+function closeLearning() {
+  playSound(sfxClick);
+  document.getElementById("learningView").style.display = "none";
+  homeView.style.display = "block";
+  if (btnProfile) btnProfile.style.display = "flex";
+}
+
+// 3. RENDERER (PENAMPIL KONTEN)
+
+// Tampilan Awal: Pilih Level N5-N1
+function renderLevels() {
+  const container = document.getElementById("learningContent");
+  const bread = document.getElementById("learningBreadcrumb");
+
+  bread.innerHTML = "<span>Home</span>";
+  document.getElementById("learningTitle").innerText = "Pilih Level JLPT";
+
+  let html = '<div class="level-grid">';
+  Object.keys(jlptData).forEach((key) => {
+    const lvl = jlptData[key];
+    html += `
+            <div class="level-card" onclick="renderTopics('${key}')">
+                <span class="level-badge-big">${key.toUpperCase()}</span>
+                <p>${lvl.title}</p>
+            </div>
+        `;
+  });
+  html += "</div>";
+  container.innerHTML = html;
+}
+
+// Tampilan Kedua: Pilih Topik (Grammar/Vocab)
+function renderTopics(levelKey) {
+  playSound(sfxClick);
+  const container = document.getElementById("learningContent");
+  const bread = document.getElementById("learningBreadcrumb");
+  const data = jlptData[levelKey];
+
+  bread.innerHTML = `<span onclick="renderLevels()">Home</span> > <span>${levelKey.toUpperCase()}</span>`;
+  document.getElementById("learningTitle").innerText = data.title;
+
+  if (!data.topics || data.topics.length === 0) {
+    container.innerHTML =
+      "<p style='text-align:center; margin-top:20px;'>Materi belum tersedia (Coming Soon).</p>";
+    return;
+  }
+
+  let html = '<div class="level-grid">';
+  data.topics.forEach((topic) => {
+    html += `
+            <div class="level-card" onclick="renderLessonList('${levelKey}', '${topic.id}')">
+                <i class="fas ${topic.icon}" style="font-size: 2rem; color: var(--main-color); margin-bottom:10px;"></i>
+                <p><strong>${topic.title}</strong></p>
+            </div>
+        `;
+  });
+  html += "</div>";
+  container.innerHTML = html;
+}
+
+// Tampilan Ketiga: List Pelajaran
+function renderLessonList(levelKey, topicId) {
+  playSound(sfxClick);
+  const container = document.getElementById("learningContent");
+  const bread = document.getElementById("learningBreadcrumb");
+  const contentData = jlptData[levelKey].content[topicId];
+
+  bread.innerHTML = `<span onclick="renderLevels()">Home</span> > <span onclick="renderTopics('${levelKey}')">${levelKey.toUpperCase()}</span> > <span>${topicId}</span>`;
+
+  // LOGIKA KHUSUS TAMPILAN VOCABULARY (TABEL)
+  if (topicId === "vocab") {
+    let html = `
+            <div class="lesson-section">
+                <table class="vocab-table">
+                    <thead>
+                        <tr>
+                            <th>Kanji</th><th>Kana</th><th>Arti</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+    contentData.forEach((word) => {
+      html += `
+                <tr>
+                    <td class="jp-text">${word.kanji}</td>
+                    <td>${word.kana}<br><small>${word.romaji}</small></td>
+                    <td>${word.mean}</td>
+                </tr>
+            `;
+    });
+    html += `</tbody></table></div>`;
+    container.innerHTML = html;
+    return;
+  }
+
+  if (topicId === "kanji") {
+    let html = '<div style="display:flex; flex-direction:column; gap:10px;">';
+
+    contentData.forEach((k) => {
+      html += `
+            <div class="lesson-section">
+                <h3 class="jp-text" style="margin:0; font-size:2rem;">${k.kanji}</h3>
+                <p>${k.kana} ・ ${k.romaji}</p>
+                <p style="color:#aaa;">${k.mean}</p>
+            </div>
+        `;
+    });
+
+    html += "</div>";
+    container.innerHTML = html;
+    return;
+  }
+
+  // LOGIKA STANDAR (LIST PELAJARAN SEPERTI GRAMMAR)
+  if (!contentData) {
+    container.innerHTML = "<p>Belum ada materi.</p>";
+    return;
+  }
+
+  let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+  contentData.forEach((lesson, index) => {
+    html += `
+            <div class="lesson-section" style="cursor: pointer;" onclick="renderLessonDetail('${levelKey}', '${topicId}', ${index})">
+                <h3 style="margin:0;">${lesson.title}</h3>
+                <p style="color:#aaa; font-size:0.9rem;">${lesson.summary}</p>
+            </div>
+        `;
+  });
+  html += "</div>";
+  container.innerHTML = html;
+}
+
+// Tampilan Keempat: Detail Pelajaran (Isi Materi)
+function renderLessonDetail(levelKey, topicId, index) {
+  playSound(sfxClick);
+  const container = document.getElementById("learningContent");
+  const data = jlptData[levelKey].content[topicId][index];
+
+  // Render HTML Materi
+  container.innerHTML = `
+        <h2 style="margin-bottom:20px; color:var(--main-color);">${data.title}</h2>
+        ${data.details}
+    `;
+}
+
+// Fungsi Cek Kuis Sederhana
+function checkQuiz(element, isCorrect) {
+  if (isCorrect) {
+    element.classList.add("correct");
+    element.innerHTML += " ✅ Benar!";
+    playSound(sfxSuccess);
+  } else {
+    element.classList.add("wrong");
+    element.innerHTML += " ❌ Salah, coba lagi.";
+  }
+  // Disable klik lagi
+  element.onclick = null;
+}
+
+const novels = [
+  {
+    id: 1,
+    title: "Reinkarnasi Slime",
+    cover: "https://cdn.myanimelist.net/images/anime/1258/126929.jpg",
+    story: [
+      "Gelap. Sunyi. Hening seperti ruang kosong tanpa udara. Kesadaranku perlahan mengapung kembali, seolah-olah aku terbangun dari tidur panjang yang tidak pernah kuminta.",
+      "Ketika akhirnya aku bisa membuka mata, cahaya matahari menembus celah dedaunan di atas kepalaku. Hangat. Terang. Menyilaukan. Tapi… ada yang aneh.",
+      "Aku mencoba mengangkat tanganku—atau setidaknya, aku *berusaha*. Tapi sesuatu terasa salah. Tidak ada jari. Tidak ada tangan. Tidak ada tubuh.",
+      "Yang kurasakan hanya tubuh kenyal, dingin, dan… melar?",
+      "Aku melihat ke bawah. Sosok bulat biru transparan memantulkan cahaya. Aku bergeming. Tidak percaya. Tidak menerima.",
+      "Aku… jadi slime? SERIUS?",
+      "Otakku langsung overload. Ini bukan mimpi, kan? Tidak ada tombol logout. Tidak ada cutscene pembuka. Tidak ada tutorial. Hanya aku… dan tubuh lendir aneh ini.",
+      "Saat aku mencoba bergerak, tubuhku melompat tanpa kendali, memantul seperti jeli. Rasanya memalukan tapi juga lucu… mungkin.",
+      "Di kejauhan, terdengar gemuruh. Sesuatu yang besar bergerak di balik pepohonan. Aku menelan ludah—atau setidaknya mencoba, walaupun aku bahkan tidak punya tenggorokan.",
+      "Jika aku benar-benar reinkarnasi jadi slime, maka aku harus bertahan hidup. Caranya? Aku juga nggak tahu.",
+      "Tapi satu hal jelas: petualanganku baru saja dimulai.",
+      "(Tamat Prolog)",
+      "Tubuhku bergoyang-goyang kecil ketika aku mencoba menenangkan diri. Rasanya aneh, seperti balon air yang gelisah. Tapi aku harus fokus. Panik nggak bakal bantu.",
+      "Aku mencoba mengingat hal terakhir sebelum keadaan ini. Jalanan ramai. Suara klakson. Cahaya berkelebat. Dan… rasa sakit yang singkat.",
+      "Oke, jadi kemungkinan besar: aku mati. Dan kini aku hidup lagi. Sebagai slime. Dunia memang suka bercanda.",
+      "Aku memaksa tubuhku bergerak maju. Setiap ‘langkah’ terasa seperti melompat kecil tanpa kendali—lebih mirip jelly cube dilepar ke lantai.",
+      "Tiba-tiba ada suara napas berat dari balik semak. Tubuhku refleks mengkerut. Suara itu dalam. Berat. Terlalu dekat.",
+      "Dari balik rimbunan muncul seekor serigala raksasa dengan mata kuning menyala. Bulunya kusut, tapi taringnya terlihat sangat… sangat tajam.",
+      "Aku ingin kabur, tapi tubuh slime ini lebih lambat dari buffering WiFi murahan.",
+      "Serigala itu mendekatkan kepalanya. Nafas hangatnya menyapu tubuhku, membuat permukaan slime bergetar.",
+      "‘Jangan makan aku… Jangan makan aku…’ pikirku, walau aku nggak yakin slime punya ekspresi takut.",
+      "Serigala itu menggeram rendah. Ia membuka mulutnya—tepat pada detik itu, sesuatu terjadi.",
+      "Tubuhku mengeluarkan cahaya biru kecil, seperti percikan listrik tipis yang menari di permukaanku.",
+      "Serigala itu berhenti. Tergagap. Lalu *mundur*.",
+      "Hah?! Aku ngeluarin… aura? Skill? Apa ini cheat karakter utama?",
+      "Sebelum aku sempat bereaksi, sebuah suara bergema di dalam kepalaku. Bukan dari luar. Dari *dalam*.",
+      "“Analisis selesai. Kemampuan unik terdeteksi: Adaptive Gel.”",
+      "Aku terdiam. ‘Siapa itu?!’",
+      "“Sistem internal teraktivasi. Memulai sinkronisasi.”",
+      "Oke, jadi selain jadi slime, aku juga punya *sistem*. Ini semakin mirip game RPG. Dan anehnya… aku nggak keberatan.",
+      "Serigala itu sudah kabur entah ke mana. Mungkin dia kira aku monster kelas tinggi. Yah, biarin.",
+      "Aku mulai mengeksplorasi sekeliling. Hutan ini luas. Pepohonannya tinggi dan cahaya matahari jatuh seperti tirai keemasan. Suara sungai kecil terdengar tidak jauh.",
+      "Saat aku bergerak ke arah suara air, sistem kembali berbicara.",
+      "“Rekomendasi pertama: konsumsi sumber daya untuk meningkatkan massa dan energi.”",
+      "Makan? Tapi aku slime. Makan apa? Rumput? Batu? Serangga?",
+      "Aku mendekat ke sebuah batu kecil. Tubuhku menyentuhnya—dan batu itu *larut* seperti dimakan asam.",
+      "“Item terserap. Energi +1.”",
+      "HAHA. Oke, ini lumayan satisfying.",
+      "Aku mulai menyerap apapun yang kubisa: daun, kerikil, jamur kecil (yang semoga nggak beracun), bahkan sepotong kayu.",
+      "Setiap kali sesuatu terserap, tubuhku makin stabil, nggak terlalu jelly-jelly lagi. Rasanya seperti naik level pelan-pelan.",
+      "Lalu aku mendengar suara gemericik sungai semakin dekat. Aku bergerak ke sana… dan apa yang kulihat membuatku terpaku.",
+      "Ada bayangan besar di balik air. Sesuatu yang bernafas keras. Sesuatu yang kelihatannya jauh lebih berbahaya dari serigala tadi.",
+      "Jika ini dunia baru, maka sepertinya ujian pertamaku belum selesai.",
+      "(Bersambung)",
+    ],
+  },
+  {
+    id: 2,
+    title: "Kisah Cinta Sekolah",
+    cover: "https://cdn.myanimelist.net/images/anime/1015/138006.jpg",
+    story: [
+      "Bel sekolah berbunyi, memecah keheningan kelas yang sudah sejak tadi membuatku mengantuk. Siswa-siswa lain langsung bergegas merapikan buku dan keluar dari kelas, tapi aku tetap duduk menatap jendela.",
+      "Hujan turun deras. Sangat deras. Langit gelap dan suara rintikannya memenuhi udara seperti musik latar film romantis yang kelewat dramatis.",
+      "Masalahnya sederhana: aku lupa bawa payung. Lagi.",
+      "Saat aku memandangi halaman sekolah yang dipenuhi genangan air, tiba-tiba payung berwarna kuning cerah muncul di sisi pandanganku.",
+      "Seseorang memegangnya. Seseorang yang… ya, jelas bukan orang sembarangan bagiku.",
+      "Dia tersenyum seperti biasanya, senyum yang entah kenapa selalu sukses bikin jantungku nge-lag setengah detik.",
+      "“Pakai ini,” katanya. Sederhana, tapi suaranya terdengar hangat seperti teh manis di hari hujan.",
+      "Aku hendak menolak, tapi dia menatapku seolah berkata 'udah terima aja'. Dan jujur, siapa sih yang bisa nolak tatapan itu?",
+      "Kami berjalan berdampingan melewati lorong sekolah. Payung kuning itu terlalu kecil untuk dua orang, sehingga jarak kami… ya, sangat dekat.",
+      "Hujan terasa lebih pelan. Langkah kaki terdengar lebih lembut. Dan entah kenapa, dunia di luar payung itu rasanya memudar.",
+      "Untuk pertama kalinya, aku merasa ini bukan sekadar kebetulan. Mungkin… ini awal cerita kami.",
+      "Saat kami keluar dari gedung sekolah, udara terasa lebih dingin daripada yang kukira. Hujan masih turun deras, tapi suara rintiknya terdengar jauh lebih lembut ketika kami berjalan berdua.",
+      "Payung kuning kecil itu memaksa kami berjalan sangat dekat. Saking dekatnya, aku bisa mendengar napasnya, bahkan aroma sampo rambutnya yang wangi banget.",
+      "Aku mencoba berjalan lurus, tapi jujur aja—otakku sedang error. Buffering. Freeze. Crash. Semua jadi satu.",
+      "“Kamu nggak keberatan, kan?” tanyanya tiba-tiba.",
+      "Aku hampir tersedak udara. “H-ha? Keberatan apa?”",
+      "Dia mengangkat payung sedikit, seperti memastikan wajahku terlihat. “Berjalan bareng begini.”",
+      "Duh. Pertanyaan mematikan.",
+      "“Nggak,” jawabku cepat. Mungkin terlalu cepat. “Malah… senang.”",
+      "Dia tertawa kecil. Suara yang bikin seluruh dunia kayak berhenti satu detik.",
+      "Kami melewati taman sekolah. Genangan air memantulkan cahaya lampu warna kuning keemasan. Cantik. Tenang. Sedikit dramatis. Tapi aku suka.",
+      "“Kamu sering lupa bawa payung,” katanya sambil tersenyum kecil.",
+      "“Iya…” Aku nyengir. “Padahal udah niat dari rumah.”",
+      "“Mulai besok aku bawain dua, deh.” Ucapannya santai, tapi jantungku langsung jungkir balik.",
+      "Aku menoleh. Ekspresinya polos, tulus, seolah-olah apa yang ia katakan bukan big deal sama sekali.",
+      "Kami berjalan pelan sampai gerbang sekolah. Hujan belum mau berhenti, jadi kami berteduh di bawah atap kecil dekat pintu pagar.",
+      "Angin berhembus, membawa aroma tanah basah. Dia menggenggam gagang payung, memainkannya pelan.",
+      "“Kamu ada waktu sebentar?” tanyanya.",
+      "“Ada,” jawabku tanpa pikir panjang. Jelas ada. Untuk dia, ada waktu sepanjang hari juga gas.",
+      "“Aku mau bilang sesuatu.”",
+      "Jantungku berhenti. Mati. Reboot. Restart.",
+      "Dia menatapku. Tatapan yang bikin lutut lemes.",
+      "“Aku… sebenarnya sudah lama ingin ngomong ini.”",
+      "Hujan berhenti. Dunia hening. Hanya suara detak jantungku yang terasa terlalu keras.",
+      "“Aku suka kamu.”",
+      "Kalimat itu jatuh sederhana. Tapi dampaknya? Kayak meteor nabrak bumi.",
+      "Aku membeku. Bibirku kering. Otakku kosong.",
+      "Dia tersenyum kecil. “Nggak apa-apa kalau kamu butuh waktu mikir. Aku cuma… pengin kamu tahu.”",
+      "Payung itu menutup perlahan. Hujan mulai reda, dan kami hanya berdiri saling menatap.",
+      "Hari itu, di bawah payung kuning kecil, hidupku berubah.",
+      "(Bersambung)",
+    ],
+  },
+];
+
+let currentNovel = null;
+let currentParagraphIndex = 0;
+let isTyping = false; // Cek apakah teks masih ngetik
+let typeInterval;
+
+// --- NAVIGASI MENU NOVEL ---
+function openNovelMenu() {
+  playSound(sfxClick);
+  hideAllViews();
+  document.getElementById("novelMenuView").style.display = "block";
+  if (btnProfile) btnProfile.style.display = "none";
+  renderNovelList();
+}
+
+function closeNovelMenu() {
+  playSound(sfxClick);
+  document.getElementById("novelMenuView").style.display = "none";
+  homeView.style.display = "block";
+  if (btnProfile) btnProfile.style.display = "flex";
+}
+
+function renderNovelList() {
+  const list = document.getElementById("novelList");
+  list.innerHTML = novels
+    .map(
+      (novel) => `
+        <div class="novel-item" onclick="startReading(${novel.id})">
+            <img src="${novel.cover}" class="novel-cover">
+            <div class="novel-title">${novel.title}</div>
+        </div>
+    `
+    )
+    .join("");
+}
+
+// --- LOGIKA READER (BACA) ---
+
+function startReading(id) {
+  playSound(sfxClick);
+  const novel = novels.find((n) => n.id === id);
+  if (!novel) return;
+
+  currentNovel = novel;
+  currentParagraphIndex = 0;
+
+  // Sembunyikan menu, buka reader
+  document.getElementById("novelMenuView").style.display = "none";
+  document.getElementById("novelReaderView").style.display = "flex"; // Pakai flex biar tengah
+
+  showParagraph();
+}
+
+function showParagraph() {
+  const textEl = document.getElementById("novelText");
+  const indicator = document.getElementById("nextIndicator");
+
+  // Reset
+  textEl.innerText = "";
+  indicator.style.display = "none";
+  isTyping = true;
+
+  // Ambil teks saat ini
+  const text = currentNovel.story[currentParagraphIndex];
+  let i = 0;
+
+  // Efek Ketikan
+  clearInterval(typeInterval);
+  typeInterval = setInterval(() => {
+    textEl.innerText += text.charAt(i);
+    i++;
+    if (i >= text.length) {
+      clearInterval(typeInterval);
+      isTyping = false;
+      indicator.style.display = "block"; // Munculkan segitiga setelah selesai ngetik
+    }
+  }, 30); // Kecepatan ngetik (makin kecil makin cepat)
+}
+
+function nextParagraph() {
+  // Kalau sedang ngetik, jangan bisa di-skip (atau bisa diubah logicnya jadi instant finish)
+  if (isTyping) {
+    // Opsi: Klik saat ngetik = langsung munculin semua teks
+    clearInterval(typeInterval);
+    document.getElementById("novelText").innerText =
+      currentNovel.story[currentParagraphIndex];
+    isTyping = false;
+    document.getElementById("nextIndicator").style.display = "block";
+    return;
+  }
+
+  playSound(sfxClick);
+  currentParagraphIndex++;
+
+  // Cek apakah cerita habis
+  if (currentParagraphIndex >= currentNovel.story.length) {
+    closeNovelReader(); // Balik ke menu
+  } else {
+    showParagraph(); // Lanjut paragraf
+  }
+}
+
+function closeNovelReader(event) {
+  // Mencegah event bubbling (supaya pas klik tombol back, gak dianggap klik layar buat next)
+  if (event) event.stopPropagation();
+
+  playSound(sfxClick);
+  document.getElementById("novelReaderView").style.display = "none";
+  document.getElementById("novelMenuView").style.display = "block"; // Balik ke menu novel
 }
 
 // Start
