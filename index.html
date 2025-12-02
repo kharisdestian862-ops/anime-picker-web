@@ -37,11 +37,13 @@
         </button>
       </div>
 
+      <h1 class="zen-hide" data-lang="title">Cari Anime</h1>
       <h1
         id="realTimeClock"
         class="zen-hide"
         style="
           font-size: 4rem;
+          margin-top: 5px;
           margin-bottom: 0;
           color: var(--main-color);
           font-weight: 900;
@@ -49,7 +51,6 @@
       >
         --:--
       </h1>
-      <h1 class="zen-hide" data-lang="title">Cari Anime</h1>
       <h3
         id="greetingText"
         class="zen-hide"
@@ -685,6 +686,13 @@
       <div class="fab-items">
         <button
           class="toggle-btn mini-fab"
+          style="background-color: #f39c12"
+          onclick="openQuest()"
+        >
+          <i class="fas fa-trophy"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab"
           style="background-color: #e84393"
           onclick="openOmikuji()"
         >
@@ -1102,6 +1110,32 @@
           Kocok Ramalan!
         </button>
       </div>
+    </div>
+
+    <div id="questView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeQuest()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
+      </button>
+
+      <h2 style="margin-top: 50px; color: var(--main-color)">Misi Harian</h2>
+      <p style="color: #aaa; font-size: 0.9rem">
+        Selesaikan misi untuk naik level!
+      </p>
+
+      <div
+        id="questCountdown"
+        style="
+          font-weight: bold;
+          color: #e74c3c;
+          font-size: 0.9rem;
+          margin-bottom: 20px;
+        "
+      >
+        Reset dalam: <span id="timerText">--:--:--</span>
+      </div>
+
+      <div id="questList" class="quest-container"></div>
     </div>
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
