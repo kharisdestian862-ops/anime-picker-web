@@ -40,6 +40,195 @@ let myChart = null;
 let lastView = "homeView";
 let searchResults = [];
 
+const omikujiData = [
+  {
+    title: "Daikichi (大吉)",
+    desc: "Keberuntungan Besar! Gacha-mu pasti wangy hari ini.",
+    color: "#e74c3c",
+  },
+  {
+    title: "Chukichi (中吉)",
+    desc: "Lumayan Beruntung. Hati-hati spoiler anime.",
+    color: "#e67e22",
+  },
+  {
+    title: "Shokichi (小吉)",
+    desc: "Keberuntungan Kecil. Waifu-mu mungkin notice.",
+    color: "#f1c40f",
+  },
+  {
+    title: "Kichi (吉)",
+    desc: "Biasa Saja. Jangan skip opening anime hari ini.",
+    color: "#2ecc71",
+  },
+  {
+    title: "Suekichi (末吉)",
+    desc: "Keberuntungan Akhir. Internet mungkin agak lemot.",
+    color: "#3498db",
+  },
+  {
+    title: "Kyo (凶)",
+    desc: "Sial... Hati-hati sama orang berkacamata hari ini.",
+    color: "#9b59b6",
+  },
+  {
+    title: "Daikyo (大凶)",
+    desc: "Sial Besar! Jangan gacha dulu, simpan primogem/ticket-mu!",
+    color: "#2c3e50",
+  },
+  {
+    title: "Hankichi (半吉)",
+    desc: "Setengah Beruntung. Anime favoritmu dapat filler episode.",
+    color: "#1abc9c",
+  },
+  {
+    title: "Mikichi (微吉)",
+    desc: "Keberuntungan Mini. Karaktermu mungkin kena nerf di next patch.",
+    color: "#8e44ad",
+  },
+  {
+    title: "Ultra Kichi (超吉)",
+    desc: "Keberuntungan OP! Kamu auto MC hari ini.",
+    color: "#ff6f61",
+  },
+  {
+    title: "KiraKichi (煌吉)",
+    desc: "Keberuntungan Berkilau! Efek bintang anime menyertaimu.",
+    color: "#f39c12",
+  },
+  {
+    title: "Tsundere Kyo (拗凶)",
+    desc: "Sial Tsundere. Akan sial, tapi ‘bukan karena kamu spesial atau apa!!’",
+    color: "#c0392b",
+  },
+  {
+    title: "Neko Kichi (猫吉)",
+    desc: "Keberuntungan Kucing. Kamu akan melihat kucing random hari ini.",
+    color: "#ffcc00",
+  },
+  {
+    title: "Weeb Kyo (極凶)",
+    desc: "Sial Para Wibu. Hindari debat sub vs dub hari ini.",
+    color: "#34495e",
+  },
+  {
+    title: "Yami Kyo (闇凶)",
+    desc: "Aura gelap menghampiri… HP-mu mungkin lowbat di saat genting.",
+    color: "#000000",
+  },
+  {
+    title: "Ghost Kichi (霊吉)",
+    desc: "Keberuntungan Arwah. Jangan kaget kalau pintu kamar bunyi sendiri.",
+    color: "#5d6d7e",
+  },
+  {
+    title: "Kowai Daikyo (怖大凶)",
+    desc: "Sial menyeramkan. Jangan bercermin tengah malam.",
+    color: "#2f3640",
+  },
+
+  {
+    title: "Waifu Kichi (嫁吉)",
+    desc: "Waifu-mu tersenyum hari ini. Imouto vibes meningkat 300%.",
+    color: "#ff9ff3",
+  },
+  {
+    title: "Husbando Kichi (夫吉)",
+    desc: "Husbando-mu bakal protect kamu dari sial kecil hari ini.",
+    color: "#54a0ff",
+  },
+  {
+    title: "TsunWaifu (嫁凶)",
+    desc: "Waifu-mu lagi ngambek. Jangan godain waifu lain dulu.",
+    color: "#eb3b5a",
+  },
+
+  {
+    title: "SSR Drop (超幸)",
+    desc: "Peluang SSR meningkat 0.0000001% (tetap dicoba).",
+    color: "#feca57",
+  },
+  {
+    title: "Rate Up Scam (詐吉)",
+    desc: "Rate up ≠ guaranteed. Kamu sudah tahu.",
+    color: "#576574",
+  },
+  {
+    title: "Pity Saver (保吉)",
+    desc: "Lagi hoki tapi cuma dikit. Pity aman.",
+    color: "#10ac84",
+  },
+  {
+    title: "Ultra Pity (極保)",
+    desc: "Beruntung… tapi harus 90 pull dulu. Good luck.",
+    color: "#222f3e",
+  },
+
+  {
+    title: "Matsuri Kichi (祭吉)",
+    desc: "Ada vibe festival hari ini. Mood OP.",
+    color: "#f368e0",
+  },
+  {
+    title: "Takoyaki Kichi (蛸吉)",
+    desc: "Takoyaki hari ini lebih enak dari biasanya.",
+    color: "#d35400",
+  },
+  {
+    title: "Omatsuri Kyo (祭凶)",
+    desc: "Kamu lupa bawa uang cash ke festival… sial kecil.",
+    color: "#6c5ce7",
+  },
+
+  {
+    title: "Warm Kichi (暖吉)",
+    desc: "Hari ini bakal ada hal kecil yang bikin senyum.",
+    color: "#ffda79",
+  },
+  {
+    title: "Calm Kichi (静吉)",
+    desc: "Ketenangan datang. Cocok binge anime healing.",
+    color: "#7efff5",
+  },
+  {
+    title: "Coffee Kichi (珈吉)",
+    desc: "Minuman panas bakal nge-boost harimu.",
+    color: "#a67c52",
+  },
+
+  {
+    title: "Plot Twist Kyo (捻凶)",
+    desc: "Hati-hati, sesuatu bakal berubah tiba-tiba hari ini.",
+    color: "#6c757d",
+  },
+  {
+    title: "Isekai Ticket (転吉)",
+    desc: "Kamu hampir ke-isekai pas nyebrang jalan.",
+    color: "#00cec9",
+  },
+  {
+    title: "Yandere Kyo (病凶)",
+    desc: "Jangan terlalu charming… ada yang ngikutin.",
+    color: "#c23616",
+  },
+
+  {
+    title: "Cursed Kichi (呪吉)",
+    desc: "Keberuntungan… tapi sensasinya salah.",
+    color: "#9b59b6",
+  },
+  {
+    title: "rng.exe (乱吉)",
+    desc: "Semua keberuntungan random hari ini. Bisa hoki, bisa nggak.",
+    color: "#55efc4",
+  },
+  {
+    title: "404 Luck Not Found",
+    desc: "Keberuntunganmu hilang dari server.",
+    color: "#636e72",
+  },
+];
+
 const quickTags = [
   { id: "1", name: "Action" },
   { id: "22", name: "Romance" },
@@ -1533,6 +1722,8 @@ function hideAllViews() {
     document.getElementById("novelMenuView").style.display = "none";
   if (document.getElementById("novelReaderView"))
     document.getElementById("novelReaderView").style.display = "none";
+  if (document.getElementById("omikujiView"))
+    document.getElementById("omikujiView").style.display = "none";
 }
 
 function openDetail(animeData) {
@@ -3637,6 +3828,69 @@ function closeNovelReader(event) {
   playSound(sfxClick);
   document.getElementById("novelReaderView").style.display = "none";
   document.getElementById("novelMenuView").style.display = "block"; // Balik ke menu novel
+}
+
+function openOmikuji() {
+  playSound(sfxClick);
+  hideAllViews();
+  document.getElementById("omikujiView").style.display = "block";
+  if (btnProfile) btnProfile.style.display = "none";
+
+  // Reset tampilan saat dibuka
+  document.getElementById("omikujiPaper").classList.remove("show");
+  document.getElementById("omikujiBox").classList.remove("shaking");
+  document.getElementById("btnDrawOmi").disabled = false;
+  document.getElementById("btnDrawOmi").innerText = "Kocok Ramalan!";
+}
+
+function closeOmikuji() {
+  playSound(sfxClick);
+  document.getElementById("omikujiView").style.display = "none";
+  homeView.style.display = "block";
+  if (btnProfile) btnProfile.style.display = "flex";
+}
+
+function drawOmikuji() {
+  const box = document.getElementById("omikujiBox");
+  const paper = document.getElementById("omikujiPaper");
+  const btn = document.getElementById("btnDrawOmi");
+
+  // Cegah klik double
+  if (box.classList.contains("shaking") || paper.classList.contains("show")) {
+    // Reset kalau mau kocok ulang
+    paper.classList.remove("show");
+    btn.innerText = "Kocok Ramalan!";
+    return;
+  }
+
+  playSound(sfxClick);
+  btn.disabled = true;
+  btn.innerText = "Mengocok...";
+
+  // 1. Animasi Shake
+  box.classList.add("shaking");
+
+  // 2. Tunggu 1.5 detik lalu muncul hasil
+  setTimeout(() => {
+    box.classList.remove("shaking");
+
+    // Gacha Result
+    const result = omikujiData[Math.floor(Math.random() * omikujiData.length)];
+
+    document.getElementById("omiResultTitle").innerText =
+      result.title.split(" ")[0]; // Ambil Romaji
+    document.getElementById("omiResultTitle").style.color = result.color;
+    document.getElementById("omiResultJp").innerText =
+      result.title.split(" ")[1]; // Ambil Kanji
+    document.getElementById("omiResultText").innerText = result.desc;
+
+    // Animasi Kertas Keluar
+    paper.classList.add("show");
+    playSound(sfxSuccess);
+
+    btn.disabled = false;
+    btn.innerText = "Coba Lagi";
+  }, 1500);
 }
 
 // Start
