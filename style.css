@@ -2265,3 +2265,88 @@ body.light-mode .vocab-table td {
     height: 140px;
   }
 }
+
+.omikuji-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  height: 400px;
+  justify-content: center;
+}
+
+/* Kotak Ramalan (Bentuk Tabung/Hexagon Sederhana) */
+.omikuji-box {
+  width: 120px;
+  height: 200px;
+  background: #f1c40f; /* Warna Kayu/Emas */
+  border: 4px solid #d35400;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.2s;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.omikuji-hole {
+  position: absolute;
+  top: -10px;
+  width: 40px;
+  height: 20px;
+  background: #2c3e50;
+  border-radius: 50%;
+  border: 3px solid #d35400;
+}
+
+/* Animasi Mengocok (Shake) */
+.shaking {
+  animation: shakeBox 0.5s infinite;
+}
+
+@keyframes shakeBox {
+  0% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  25% {
+    transform: rotate(-10deg) translate(-5px, 5px);
+  }
+  50% {
+    transform: rotate(0deg) translate(0, -5px);
+  }
+  75% {
+    transform: rotate(10deg) translate(5px, 5px);
+  }
+  100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+}
+
+/* Kertas Ramalan */
+.omikuji-paper {
+  position: absolute;
+  top: 150px; /* Posisi awal di dalam box */
+  width: 220px;
+  background: #fffbf0; /* Warna kertas lama */
+  color: #333;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  opacity: 0;
+  z-index: 1; /* Di belakang box saat awal */
+  transform: scale(0.5);
+  transition: all 0.5s ease;
+}
+
+/* Animasi Kertas Keluar */
+.omikuji-paper.show {
+  top: 220px; /* Jatuh ke bawah */
+  opacity: 1;
+  z-index: 5; /* Muncul ke depan */
+  transform: scale(1);
+}
