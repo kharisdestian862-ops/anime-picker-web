@@ -532,20 +532,30 @@ p {
 }
 
 .fab-items {
+  position: absolute;
+  right: 0;
+  bottom: 70px;
+
   display: flex;
   flex-direction: column;
   gap: 12px;
+
   opacity: 0;
   visibility: hidden;
-  transform: translateY(20px);
+  transform: translateY(20px) translateX(200px); /* GESER JAUH KE SAMPING */
   transition: all 0.3s ease;
-  margin-bottom: 15px;
+
+  z-index: -1;
+  pointer-events: none; /* HILANGIN HITBOX */
 }
 
 .fab-container.active .fab-items {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateY(0) translateX(0); /* BALIK NORMAL */
+
+  z-index: 10002;
+  pointer-events: auto; /* BARU BISA DIKLIK */
 }
 
 .fab-container.active .main-fab {
