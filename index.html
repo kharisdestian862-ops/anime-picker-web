@@ -37,6 +37,18 @@
         </button>
       </div>
 
+      <h1
+        id="realTimeClock"
+        class="zen-hide"
+        style="
+          font-size: 4rem;
+          margin-bottom: 0;
+          color: var(--main-color);
+          font-weight: 900;
+        "
+      >
+        --:--
+      </h1>
       <h1 class="zen-hide" data-lang="title">Cari Anime</h1>
       <h3
         id="greetingText"
@@ -189,6 +201,7 @@
             <span id="txtEps" class="badge badge-ep">? Eps</span>
             <span id="txtStatus" class="badge badge-status">Status</span>
           </div>
+
           <p id="txtSynopsis" class="synopsis">Sinopsis...</p>
 
           <div id="quoteArea" class="quote-box">
@@ -438,6 +451,70 @@
       <div id="scanResult" class="scan-results-container"></div>
     </div>
 
+    <div id="nameGenView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeNameGen()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
+      </button>
+
+      <h2 style="margin-top: 50px; color: var(--main-color)">
+        Gacha Nama Jepang
+      </h2>
+      <p style="color: #aaa; font-size: 0.9rem">
+        Dapatkan nama Jepang langka secara acak!
+      </p>
+
+      <div class="stats-card" style="margin-top: 20px; text-align: center">
+        <!-- Ikon Dadu Tambahan Biar Keren -->
+        <div style="margin-bottom: 20px">
+          <i
+            class="fas fa-dice"
+            style="font-size: 3rem; color: var(--main-color); opacity: 0.8"
+          ></i>
+        </div>
+
+        <!-- Input HAPUS, ganti jadi tombol saja -->
+        <button
+          class="gacha-btn"
+          onclick="generateJapaneseName()"
+          style="width: 100%"
+        >
+          <i class="fas fa-random"></i> Gacha Nama
+        </button>
+
+        <div
+          id="nameResult"
+          style="margin-top: 30px; display: none; animation: popUp 0.3s ease"
+        >
+          <p style="color: #888; margin-bottom: 5px; font-size: 0.8rem">
+            Nama Panggilanmu:
+          </p>
+          <h1
+            id="jpNameResult"
+            style="
+              font-size: 1.8rem;
+              color: #fff;
+              margin: 0;
+              text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            "
+          >
+            -
+          </h1>
+          <p
+            id="jpNameMeaning"
+            style="
+              font-style: italic;
+              color: var(--main-color);
+              font-size: 0.9rem;
+              margin-top: 8px;
+            "
+          >
+            -
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div id="statsView" class="container" style="display: none">
       <button class="nav-btn top-left" onclick="closeStats()">
         <i class="fas fa-arrow-left"></i>
@@ -465,6 +542,43 @@
       </div>
       <div class="chart-container">
         <canvas id="wibuChart"></canvas>
+      </div>
+    </div>
+
+    <div id="scheduleView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeSchedule()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
+      </button>
+
+      <h2 style="margin-top: 50px; color: var(--main-color)">Jadwal Tayang</h2>
+
+      <div class="day-tabs">
+        <button class="day-btn active" onclick="loadSchedule('monday')">
+          Senin
+        </button>
+        <button class="day-btn" onclick="loadSchedule('tuesday')">
+          Selasa
+        </button>
+        <button class="day-btn" onclick="loadSchedule('wednesday')">
+          Rabu
+        </button>
+        <button class="day-btn" onclick="loadSchedule('thursday')">
+          Kamis
+        </button>
+        <button class="day-btn" onclick="loadSchedule('friday')">Jumat</button>
+        <button class="day-btn" onclick="loadSchedule('saturday')">
+          Sabtu
+        </button>
+        <button class="day-btn" onclick="loadSchedule('sunday')">Minggu</button>
+      </div>
+
+      <div
+        id="scheduleList"
+        class="trending-list"
+        style="flex-wrap: wrap; justify-content: center; margin-top: 20px"
+      >
+        <div class="loading-trending">Pilih hari...</div>
       </div>
     </div>
 
@@ -569,6 +683,34 @@
 
     <div class="fab-container" id="fabContainer">
       <div class="fab-items">
+        <button
+          class="toggle-btn mini-fab"
+          style="background-color: #8e44ad"
+          onclick="openNovelMenu()"
+        >
+          <i class="fas fa-book"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab"
+          style="background-color: #2ecc71"
+          onclick="openLearning()"
+        >
+          <i class="fas fa-book-open"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab"
+          style="background-color: #fd79a8"
+          onclick="openNameGen()"
+        >
+          <i class="fas fa-signature"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab"
+          style="background-color: #9b59b6"
+          onclick="openSchedule()"
+        >
+          <i class="fas fa-calendar-alt"></i>
+        </button>
         <button
           class="toggle-btn mini-fab"
           style="background-color: #00b894"
@@ -847,6 +989,68 @@
           <i class="fas fa-paper-plane"></i> Kirim
         </button>
       </form>
+    </div>
+
+    <div
+      id="learningView"
+      class="container"
+      style="display: none; text-align: left"
+    >
+      <div class="learning-header">
+        <button class="nav-btn" onclick="closeLearning()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 id="learningTitle" style="margin: 0; color: var(--main-color)">
+          Nihongo Belajar
+        </h2>
+      </div>
+
+      <!-- Breadcrumb Navigasi -->
+      <div id="learningBreadcrumb" class="breadcrumb"></div>
+
+      <!-- Kontainer Konten Dinamis -->
+      <div id="learningContent" class="learning-content">
+        <!-- Konten akan diisi oleh JavaScript -->
+      </div>
+    </div>
+
+    <div id="novelMenuView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeNovelMenu()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
+      </button>
+      <h2 style="margin-top: 50px; color: var(--main-color)">Pustaka Novel</h2>
+      <p style="color: #aaa; font-size: 0.9rem">
+        Pilih cerita untuk mulai membaca
+      </p>
+
+      <!-- Daftar Novel akan di-render di sini oleh JS -->
+      <div
+        id="novelList"
+        class="trending-list"
+        style="flex-wrap: wrap; justify-content: center; gap: 15px"
+      ></div>
+    </div>
+
+    <!-- HALAMAN BACA (READER) -->
+    <div
+      id="novelReaderView"
+      class="novel-reader"
+      style="display: none"
+      onclick="nextParagraph()"
+    >
+      <button class="nav-btn top-left" onclick="closeNovelReader(event)">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+
+      <div class="novel-content-area">
+        <!-- Teks akan muncul di sini -->
+        <p id="novelText" class="typing-text"></p>
+
+        <div id="nextIndicator" class="next-icon" style="display: none">
+          <i class="fas fa-caret-down"></i>
+        </div>
+      </div>
     </div>
 
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
