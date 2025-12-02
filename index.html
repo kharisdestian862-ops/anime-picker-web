@@ -685,6 +685,13 @@
       <div class="fab-items">
         <button
           class="toggle-btn mini-fab"
+          style="background-color: #e84393"
+          onclick="openOmikuji()"
+        >
+          <i class="fas fa-scroll"></i>
+        </button>
+        <button
+          class="toggle-btn mini-fab"
           style="background-color: #8e44ad"
           onclick="openNovelMenu()"
         >
@@ -1050,6 +1057,50 @@
         <div id="nextIndicator" class="next-icon" style="display: none">
           <i class="fas fa-caret-down"></i>
         </div>
+      </div>
+    </div>
+
+    <div id="omikujiView" class="container" style="display: none">
+      <button class="nav-btn top-left" onclick="closeOmikuji()">
+        <i class="fas fa-arrow-left"></i>
+        <span data-lang="btn_back" style="margin-left: 5px">Kembali</span>
+      </button>
+
+      <h2 style="margin-top: 50px; color: var(--main-color)">Omikuji ⛩️</h2>
+      <p style="color: #aaa">Cek keberuntungan wibu-mu hari ini!</p>
+
+      <div class="omikuji-container">
+        <div id="omikujiBox" class="omikuji-box" onclick="drawOmikuji()">
+          <div class="omikuji-hole"></div>
+          <span style="font-size: 4rem; color: #333">籤</span>
+        </div>
+
+        <div id="omikujiPaper" class="omikuji-paper">
+          <h2 id="omiResultTitle" style="color: #e74c3c; margin: 0">
+            Daikichi
+          </h2>
+          <p
+            id="omiResultJp"
+            style="font-size: 0.9rem; color: #555; margin: 5px 0"
+          >
+            大吉
+          </p>
+          <div
+            style="width: 100%; height: 1px; background: #ddd; margin: 10px 0"
+          ></div>
+          <p id="omiResultText" style="font-size: 0.95rem; line-height: 1.4">
+            Hari ini waifu favoritmu nyata.
+          </p>
+        </div>
+
+        <button
+          id="btnDrawOmi"
+          class="gacha-btn"
+          style="margin-top: 40px"
+          onclick="drawOmikuji()"
+        >
+          Kocok Ramalan!
+        </button>
       </div>
     </div>
 
